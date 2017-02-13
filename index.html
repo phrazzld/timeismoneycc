@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>Time Is Money - A browser extension for Google Chrome</title>
+    <meta name="description" content="Time Is Money browser extension for Google Chrome automatically converts prices online into equivalent work hours">
+    <meta name="author" content="phaedrus">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="brand" class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <img id="brand-image" src="images/icon.png">
+          <h3 id="brand-name">Time Is Money <small style="float:right;margin-right:10px;padding-top:10px">spend it wisely</small></h3>
+        </div>
+      </div>
+      <div id="pitch" class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <p id="example-income-wrapper">
+          If you earn <span class="example-money">
+          <span id="currency-code">USD</span>
+          <span id="currency-symbol">$</span>
+          <span id="income-amount">15.00</span>
+          <span id="pay-frequency">hourly</span></span>
+          then a laptop costs you
+          <span class="example-money">$445.00 (29h 41m)</span>
+          </p>
+        </div>
+      </div>
+      <div id="closer" class="row">
+        <div id="download-wrapper" class="col-md-6 col-md-offset-3">
+          <a href="https://chrome.google.com/webstore/detail/time-is-money/ooppbnomdcjmoepangldchpmjhkeendl" id="downoad" class="btn btn-default btn-lg" target="_blank">Download Now</a>
+        </div>
+      </div>
+    </div>
+
+    <footer id="site-info" class="col-xs-6 col-xs-offset-3">
+      <hr>
+      <p>Copyright &copy; 2017
+      <a href="http://www.raznikov.com" target="_blank">Phaedrus Raznikov</a>
+      </p>
+    </footer>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>
