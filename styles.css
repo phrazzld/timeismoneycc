@@ -16,10 +16,6 @@ body {
   line-height: 2.2em;
 }
 
-#brand {
-  margin-bottom: 20px;
-}
-
 #brand-image {
   float: left;
   margin-right: 20px;
@@ -27,17 +23,32 @@ body {
 
 #brand-name {
   margin-top: 12px;
+  margin-bottom: 30px;
+  font-weight: 200;
 }
 
-#example-income-wrapper {
-  padding: 5px;
-  margin-bottom: 20px;
+#intro p {
+  margin: 0;
+}
+
+#pitch {
+  margin-top: 30px;
+}
+
+.example-label {
+  text-align: right;
+  min-height: 30px;
+}
+
+.example-value {
+  padding-top: 7px;
 }
 
 .example-money {
   font-family: Courier New;
   padding: 5px;
   background-color: #eee;
+  font-size: 1.2em;
 }
 
 #example-image {
@@ -48,6 +59,10 @@ body {
 #download-wrapper {
   margin-top: 20px;
   text-align: center;
+}
+
+#download-wrapper p {
+  text-align: left;
 }
 
 #site-info {
