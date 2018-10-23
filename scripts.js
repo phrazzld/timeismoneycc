@@ -51,3 +51,5 @@ function shiftExample() {
 function is(element, val) {
   return element.textContent == val;
 }
+
+document.getElementById("copyright").innerHTML = "Copyright \u00A9 " + new Date().getFullYear() + " <a href='https://www.raznikov.com' target='_blank'>Phaedrus</a>"
