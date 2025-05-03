@@ -1,0 +1,29 @@
+{
+  "name": "timeismoneycc",
+  "version": "1.0.0",
+  "description": "Time Is Money browser extension for converting prices to work hours",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint scripts.js",
+    "lint:css": "stylelint styles.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phaedrus/timeismoneycc.git"
+  },
+  "keywords": [
+    "chrome-extension",
+    "money",
+    "time",
+    "conversion"
+  ],
+  "author": "phaedrus",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "stylelint": "^16.1.0",
+    "stylelint-config-standard": "^36.0.0"
+  }
+}
