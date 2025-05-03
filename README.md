@@ -1,5 +1,8 @@
 # Time Is Money
 
+[![CI](https://github.com/phaedrus/timeismoneycc/actions/workflows/ci.yml/badge.svg)](https://github.com/phaedrus/timeismoneycc/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/phaedrus/timeismoneycc/branch/master/graph/badge.svg)](https://codecov.io/gh/phaedrus/timeismoneycc)
+
 A Chrome extension that automatically converts prices online into hours of work, helping you make mindful purchasing decisions.
 
 ![Time Is Money Icon](images/icon.png)
@@ -44,17 +47,33 @@ With Time Is Money: $445.00 (61h 23m)
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/timeismoneycc.git
+   git clone https://github.com/phaedrus/timeismoneycc.git
    cd timeismoneycc
    ```
 
-2. Open Chrome and navigate to `chrome://extensions/`
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-3. Enable "Developer mode" in the top-right corner
+3. Run tests:
+   ```bash
+   npm test
+   ```
 
-4. Click "Load unpacked" and select the cloned repository folder
+4. Lint code:
+   ```bash
+   npm run lint
+   npm run lint:css
+   ```
 
-5. Make changes to the code and reload the extension to test
+5. Open Chrome and navigate to `chrome://extensions/`
+
+6. Enable "Developer mode" in the top-right corner
+
+7. Click "Load unpacked" and select the cloned repository folder
+
+8. Make changes to the code and reload the extension to test
 
 ## Contributing
 

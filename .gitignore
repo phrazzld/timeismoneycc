@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-*
+.DS_Store
+
+# Build files
+dist/
+build/
+*.zip
+**/.claude/settings.local.json
