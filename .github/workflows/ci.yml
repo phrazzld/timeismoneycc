@@ -24,6 +24,8 @@ jobs:
       with:
         root: .
         format: text
+        log_level: INFO
+        extra: --show-warnings
         
     - name: Validate CSS
       run: |
