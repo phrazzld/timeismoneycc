@@ -39,11 +39,16 @@ jobs:
         echo "module.exports = { extends: 'eslint:recommended', env: { browser: true }, parserOptions: { ecmaVersion: 2018 } };" > .eslintrc.js
         eslint scripts.js || echo "ESLint found issues - these will be addressed in a future task"
       
-    # Placeholder for future test and coverage steps
-    # These will be implemented in subsequent tasks
-    
-    - name: Placeholder for tests
-      run: echo "Tests will be configured in a future task"
+    # Run tests and coverage
+    - name: Install dependencies
+      run: npm install
       
-    - name: Placeholder for coverage
-      run: echo "Coverage reporting will be configured in a future task"
+    - name: Run tests
+      run: npm test
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./coverage/
+        fail_ci_if_error: false
+        verbose: true
