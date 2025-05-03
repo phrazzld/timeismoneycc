@@ -1,0 +1,6 @@
+# Temporarily ignore scripts.js until it can be properly fixed
+scripts.js
+
+# Other directories to ignore
+node_modules/
+coverage/

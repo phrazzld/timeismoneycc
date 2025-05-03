@@ -5,5 +5,5 @@ module.exports = {
   collectCoverageFrom: ['scripts.js'],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov'],
-  verbose: true
+  verbose: true,
 };

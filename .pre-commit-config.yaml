@@ -37,3 +37,10 @@ repos:
         language: system
         files: '\.css$'
         pass_filenames: false
+
+      - id: prettier
+        name: Prettier
+        entry: npm run format:check
+        language: system
+        files: '\.(js|json|css|html|md)$'
+        pass_filenames: false

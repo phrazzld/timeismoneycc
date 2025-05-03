@@ -46,23 +46,28 @@ With Time Is Money: $445.00 (61h 23m)
 ### Local Development
 
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/phaedrus/timeismoneycc.git
    cd timeismoneycc
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
+
    This will automatically install pre-commit hooks.
 
 3. Run tests:
+
    ```bash
    npm test
    ```
 
 4. Lint code:
+
    ```bash
    npm run lint
    npm run lint:css
@@ -70,6 +75,7 @@ With Time Is Money: $445.00 (61h 23m)
 
 5. Pre-commit hooks:
    The project uses pre-commit hooks to ensure code quality. These run automatically when you commit changes and include:
+
    - Linting JavaScript and CSS
    - Running tests
    - Checking for trailing whitespace and file formatting
@@ -78,11 +84,11 @@ With Time Is Money: $445.00 (61h 23m)
 
 6. Open Chrome and navigate to `chrome://extensions/`
 
-6. Enable "Developer mode" in the top-right corner
+7. Enable "Developer mode" in the top-right corner
 
-7. Click "Load unpacked" and select the cloned repository folder
+8. Click "Load unpacked" and select the cloned repository folder
 
-8. Make changes to the code and reload the extension to test
+9. Make changes to the code and reload the extension to test
 
 ## Contributing
 

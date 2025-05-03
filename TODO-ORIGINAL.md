@@ -1,6 +1,7 @@
 # Project Setup TODO List
 
 ## Infrastructure
+
 - [x] Set up GitHub Actions CI
   - [x] Create .github/workflows directory
   - [x] Create CI workflow for running on push and pull requests
@@ -10,6 +11,7 @@
   - [x] Add badge to README.md
 
 ## Git Hooks
+
 - [~] Configure pre-commit hooks
   - [x] Install pre-commit framework
   - [ ] Configure linting and formatting checks
@@ -25,6 +27,7 @@
   - [ ] Enforce branch naming conventions
 
 ## Quality Standards
+
 - [ ] Implement file length enforcement
   - [ ] Configure warning at 500 lines
   - [ ] Configure error at 1000 lines
@@ -36,6 +39,7 @@
   - [ ] Configure CHANGELOG generation
 
 ## Frontend Setup
+
 - [ ] Set up Storybook
   - [ ] Initialize Storybook
   - [ ] Configure component documentation
@@ -58,6 +62,7 @@
   - [ ] Implement keyboard navigation utilities
 
 ## Documentation
+
 - [ ] Create comprehensive README.md
   - [ ] Project description and purpose
   - [ ] Features list
