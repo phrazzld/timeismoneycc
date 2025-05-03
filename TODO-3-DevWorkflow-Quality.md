@@ -3,12 +3,13 @@
 This checklist covers Git hooks, code quality enforcement, commit conventions, and semantic versioning.
 
 ## Git Hooks
-- [ ] Configure pre-commit hooks
-  - [ ] Install pre-commit framework
+- [~] Configure pre-commit hooks
+  - [x] Install pre-commit framework
   - [ ] Configure linting and formatting checks
   - [ ] Add type checking
   - [ ] Prevent commit of sensitive data and large files
   - [ ] Enforce conventional commit format
+  - [ ] Fix scripts.js to work properly with end-of-file-fixer hook
 - [ ] Configure post-commit hooks
   - [ ] Set up `glance ./` to run async
   - [ ] Generate documentation updates if needed

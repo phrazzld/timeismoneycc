@@ -5,7 +5,9 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint scripts.js",
-    "lint:css": "stylelint styles.css"
+    "lint:css": "stylelint styles.css",
+    "prepare": "pre-commit install",
+    "pre-commit": "pre-commit run --all"
   },
   "repository": {
     "type": "git",
@@ -23,7 +25,13 @@
     "eslint": "^8.56.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "pre-commit": "^1.2.2",
     "stylelint": "^16.1.0",
     "stylelint-config-standard": "^36.0.0"
-  }
+  },
+  "pre-commit": [
+    "lint",
+    "lint:css",
+    "test"
+  ]
 }

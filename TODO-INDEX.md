@@ -8,17 +8,17 @@ The original TODO list has been split into multiple focused files based on scope
    - README.md enhancements
    - LICENSE file
    - Contribution guidelines
-   
+
 2. ~~**TODO-2-Infra-CI.md** - Setting up GitHub Actions CI pipeline~~ (✅ Completed PR #6)
    - ~~GitHub Actions workflows~~ ✅
    - ~~Test/linting configuration in CI~~ ✅
    - ~~Coverage reporting~~ ✅
-   
+
 3. [**TODO-3-DevWorkflow-Quality.md**](TODO-3-DevWorkflow-Quality.md) - Developer workflow and code quality
    - Git hooks (pre-commit, post-commit, pre-push)
    - Code quality standards
    - Conventional commits & semantic versioning
-   
+
 4. [**TODO-4-Frontend.md**](TODO-4-Frontend.md) - Frontend development stack
    - Storybook configuration
    - Component testing setup
@@ -30,7 +30,7 @@ The original TODO list has been split into multiple focused files based on scope
 This recommended order is based on:
 
 1. **Documentation first** - Provides project context and clarity for all subsequent work
-2. **CI Infrastructure second** - Establishes automated checking and validation for future changes  
+2. **CI Infrastructure second** - Establishes automated checking and validation for future changes
 3. **Developer Workflow third** - Sets up local development process with Git hooks and quality enforcement
 4. **Frontend Stack last** - Builds on the established infrastructure and quality controls
 

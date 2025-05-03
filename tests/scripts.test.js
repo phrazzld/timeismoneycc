@@ -33,12 +33,12 @@ describe('Time Is Money Scripts', () => {
     // Access the script's function by making it global first
     const element = document.getElementById('currency-code');
     expect(element.textContent).toBe('USD');
-    
+
     // Test the is function indirectly through behavior
     const isUSD = element.textContent === 'USD';
     expect(isUSD).toBe(true);
   });
-  
+
   test('copyright should contain current year', () => {
     const copyright = document.getElementById('copyright');
     const currentYear = new Date().getFullYear().toString();

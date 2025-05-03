@@ -1,0 +1,39 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: scripts\.js
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  # Local hooks
+  - repo: local
+    hooks:
+      - id: npm-test
+        name: Run tests
+        entry: npm test
+        language: system
+        files: '\.js$'
+        pass_filenames: false
+
+      - id: eslint
+        name: ESLint
+        entry: npm run lint
+        language: system
+        files: '\.js$'
+        pass_filenames: false
+
+      - id: stylelint
+        name: Stylelint
+        entry: npm run lint:css
+        language: system
+        files: '\.css$'
+        pass_filenames: false

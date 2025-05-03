@@ -11,25 +11,25 @@ The CI workflow failed in the "Validate HTML" step. This step uses the Cyb3r-Jak
 ## Identified HTML Issues
 After examining the index.html file, I've identified several HTML5 validation issues:
 
-1. **Missing alt attribute on image**: 
+1. **Missing alt attribute on image**:
    ```html
    <img id="brand-image" src="images/icon.png">
    ```
    The `alt` attribute is required for accessibility.
 
-2. **Unclosed span tag**: 
+2. **Unclosed span tag**:
    ```html
    <span id="pay-frequency">hourly</span></span>
    ```
    There appears to be an extra closing `</span>` tag.
 
-3. **Meta tag spacing issue**: 
+3. **Meta tag spacing issue**:
    Line 9 has a meta tag immediately followed by a link tag without proper spacing:
    ```html
    <meta name="author" content="phaedrus"> <link rel="stylesheet" href="...">
    ```
 
-4. **Improper nesting in footer**: 
+4. **Improper nesting in footer**:
    The footer element has Bootstrap grid classes directly applied to it, which may not be valid:
    ```html
    <footer id="site-info" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
@@ -68,6 +68,6 @@ After examining the index.html file, I've identified several HTML5 validation is
 2. Implement the HTML fixes listed above
 3. Configure the HTML validator in CI to better match project needs:
    - Consider adding options to customize error checking
-   - Add error details to the CI output 
+   - Add error details to the CI output
 4. Create a PR with these fixes and merge to the CI setup branch
 5. Enhance the project with HTML linting as part of pre-commit hooks
