@@ -74,13 +74,24 @@ With Time Is Money: $445.00 (61h 23m)
    ```
 
 5. Pre-commit hooks:
-   The project uses pre-commit hooks to ensure code quality. These run automatically when you commit changes and include:
+   The project uses pre-commit hooks to ensure code quality and security. These run automatically when you commit changes and include:
 
    - Linting JavaScript and CSS
    - Running tests
    - Checking for trailing whitespace and file formatting
-   - Preventing large file commits
-   - Detecting sensitive information like private keys
+   - Preventing large file commits (>500KB)
+   - Detecting and preventing sensitive data commits:
+     - API keys
+     - Private keys
+     - AWS credentials
+     - Passwords and tokens
+     - Other sensitive patterns
+   - Enforcing code quality:
+     - Case conflict detection
+     - Proper script shebangs
+     - Python syntax checking
+     - Symlink validation
+   - Preventing binary file commits (except allowed images)
 
 6. Open Chrome and navigate to `chrome://extensions/`
 

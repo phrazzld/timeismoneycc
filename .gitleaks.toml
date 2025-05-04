@@ -1,0 +1,38 @@
+# Gitleaks configuration file
+# Customized for Time Is Money Chrome Extension
+
+title = "Gitleaks Configuration"
+
+# Enable all default detectors (includes various API keys, tokens, secrets)
+[extend]
+useDefault = true
+
+# Add more custom detectors for specific patterns
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(['"][a-zA-Z0-9]{30,45}['"])'''
+
+[[rules]]
+id = "generic-secret"
+description = "Generic Secret"
+regex = '''(?i)(['"]?(?:secret|api[-_]?key|token|password|passwd|pwd)['"]?\s*[:=]\s*['"][a-zA-Z0-9_\-\.]{8,64}['"])'''
+
+# Allow list for specific paths
+[allowlist]
+paths = [
+    '''package-lock.json$''',
+    '''package.json$''',
+    '''node_modules/''',
+    '''images/.*\.png$''',
+    '''images/.*\.jpg$''',
+    '''.*\.md$'''
+]
+
+# Allow list for specific patterns to exclude (example patterns)
+regexes = [
+    '''(?i)example[-_]?key''',
+    '''00000000-0000-0000-0000-000000000000''',
+    '''AAAA[-]?AAAA[-]?AAAA''',
+    '''example-secret-value''',
+]

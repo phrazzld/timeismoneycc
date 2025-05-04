@@ -8,7 +8,7 @@ This checklist covers Git hooks, code quality enforcement, commit conventions, a
   - [x] Install pre-commit framework
   - [x] Configure linting and formatting checks
   - [ ] Add type checking
-  - [ ] Prevent commit of sensitive data and large files
+  - [x] Prevent commit of sensitive data and large files
   - [ ] Enforce conventional commit format
   - [ ] Fix scripts.js to work properly with end-of-file-fixer hook
 - [ ] Configure post-commit hooks
