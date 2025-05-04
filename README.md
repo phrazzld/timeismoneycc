@@ -47,7 +47,7 @@ npm run pre-commit:install-hooks
 
 ### Git Hooks
 
-This project uses pre-commit and post-commit hooks:
+This project uses pre-commit, post-commit, and pre-push hooks:
 
 #### Pre-commit hooks:
 
@@ -61,6 +61,11 @@ This project uses pre-commit and post-commit hooks:
 
 - Run `glance ./` asynchronously to analyze the project
 - Check if documentation needs updating based on changed files
+
+#### Pre-push hooks:
+
+- Run complete test suite
+- Validate branch naming convention (see CONTRIBUTING.md for naming guidelines)
 
 ## License
 

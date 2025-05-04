@@ -41,10 +41,36 @@ Enhancement suggestions are welcome! Please provide:
 
 ### Branch Naming Conventions
 
-- `feature/my-new-feature` for new features
+Strictly follow these branch naming conventions (enforced by pre-push hooks):
+
+- `feature/my-new-feature` or `feat/my-new-feature` for new features
 - `bugfix/issue-description` for bug fixes
 - `docs/update-X-documentation` for documentation updates
 - `refactor/component-name` for code refactoring
+- `test/add-X-tests` for adding or updating tests
+- `chore/task-description` for routine tasks, maintenance
+- `ci/pipeline-description` for CI configuration changes
+- `build/build-system-update` for build system changes
+- `perf/optimization-description` for performance improvements
+
+All branch names must:
+
+- Start with a valid type prefix followed by a slash
+- Use only lowercase letters, numbers, and hyphens after the slash
+- Be descriptive but concise
+
+Examples of valid branch names:
+
+- `feature/add-user-authentication`
+- `bugfix/fix-memory-leak`
+- `docs/update-api-docs`
+
+Examples of invalid branch names:
+
+- `new-feature` (missing type prefix)
+- `Feature/add-login` (uppercase letters)
+- `feature_add_login` (underscores instead of hyphens)
+- `feature/` (missing description)
 
 ### Commit Message Guidelines
 

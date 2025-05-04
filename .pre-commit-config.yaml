@@ -98,3 +98,20 @@ repos:
         pass_filenames: false
         stages: [post-commit]
         always_run: true
+
+      # Pre-push hooks
+      - id: full-test-suite
+        name: Run complete test suite
+        entry: npm test
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+        always_run: true
+
+      - id: validate-branch-name
+        name: Validate branch naming convention
+        entry: ./scripts/validate-branch-name.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+        always_run: true

@@ -15,9 +15,9 @@ This checklist covers Git hooks, code quality enforcement, commit conventions, a
 - [x] Configure post-commit hooks
   - [x] Set up `glance ./` to run async
   - [x] Generate documentation updates if needed
-- [ ] Configure pre-push hooks
-  - [ ] Run complete test suite
-  - [ ] Enforce branch naming conventions
+- [x] Configure pre-push hooks
+  - [x] Run complete test suite
+  - [x] Enforce branch naming conventions
 
 ## Quality Standards
 
