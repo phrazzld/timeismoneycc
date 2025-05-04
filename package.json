@@ -18,7 +18,12 @@
     "commitlint": "commitlint --edit",
     "security-scan": "pre-commit run detect-private-key --all-files && pre-commit run detect-aws-credentials --all-files && pre-commit run gitleaks --all-files",
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "release:dry-run": "standard-version --dry-run"
   },
   "repository": {
     "type": "git",
@@ -46,6 +51,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "pre-commit": "^1.2.2",
     "prettier": "^3.5.3",
+    "standard-version": "^9.5.0",
     "stylelint": "^16.1.0",
     "stylelint-config-standard": "^36.0.0",
     "ts-jest": "^29.3.2",

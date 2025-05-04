@@ -27,6 +27,6 @@ This checklist covers Git hooks, code quality enforcement, commit conventions, a
 - [x] Set up conventional commits
   - [x] Add commitlint configuration
   - [x] Document commit message standards
-- [ ] Configure semantic versioning
-  - [ ] Set up automated versioning based on commits
-  - [ ] Configure CHANGELOG generation
+- [x] Configure semantic versioning
+  - [x] Set up automated versioning based on commits
+  - [x] Configure CHANGELOG generation

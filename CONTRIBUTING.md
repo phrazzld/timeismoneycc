@@ -74,7 +74,7 @@ Examples of invalid branch names:
 
 ### Commit Message Guidelines
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. All commits **MUST** adhere to this format, which is enforced by pre-commit hooks. See [COMMITTING.md](docs/COMMITTING.md) for a detailed guide on creating proper commits:
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. All commits **MUST** adhere to this format, which is enforced by pre-commit hooks. See [COMMITTING.md](docs/COMMITTING.md) for a detailed guide on creating proper commits. These commit messages are also used for automated versioning - see [VERSIONING.md](docs/VERSIONING.md) for details:
 
 ```
 <type>[optional scope]: <description>
@@ -220,6 +220,33 @@ These limits exclude blank lines and comments. If a file approaches these limits
 - Write tests for new features and bug fixes
 - Ensure existing tests pass before submitting PRs
 - Manual testing should verify functionality across different browsers
+
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/) 2.0.0 and uses automated versioning based on conventional commits. For details on the versioning process, see [VERSIONING.md](docs/VERSIONING.md).
+
+### Version Numbering
+
+Versions follow the `MAJOR.MINOR.PATCH` format (e.g., `1.2.3`):
+
+- **MAJOR**: Incompatible/breaking changes (from commits with `BREAKING CHANGE:` or `type!:` format)
+- **MINOR**: New features that are backward-compatible (from `feat:` commits)
+- **PATCH**: Bug fixes that are backward-compatible (from `fix:` commits)
+
+### Creating Releases
+
+To create a new release:
+
+```bash
+# First, ensure all changes are committed
+# Then run the release command
+npm run release
+
+# Push both the commit and tag
+git push --follow-tags origin master
+```
+
+For more details, read the [VERSIONING.md](docs/VERSIONING.md) documentation.
 
 ## Development Environment
 
