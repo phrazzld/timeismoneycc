@@ -194,6 +194,21 @@ A git commit template is available for assistance (automatically loaded when com
 - Add comments for complex logic
 - Keep functions small and focused on a single task
 
+### File Length Guidelines
+
+This project enforces specific file length limits to promote maintainability:
+
+- Files exceeding 500 lines will trigger a warning
+- Files exceeding 1000 lines will cause an error (commit blocked)
+- Functions should not exceed 100 lines
+- Test files have a higher threshold (warning at 800 lines)
+
+These limits exclude blank lines and comments. If a file approaches these limits, consider:
+
+- Breaking it into multiple smaller, focused files
+- Extracting reusable components or utilities
+- Refactoring to reduce complexity
+
 ### HTML/CSS
 
 - Use semantic HTML elements

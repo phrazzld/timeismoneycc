@@ -44,6 +44,24 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'error',
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/strict-boolean-expressions': 'error',
+
+    // File length enforcement
+    'max-lines': [
+      'warn',
+      {
+        max: 500,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
+    'max-lines-per-function': [
+      'warn',
+      {
+        max: 100,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
   },
   overrides: [
     {
@@ -51,6 +69,19 @@ module.exports = {
       rules: {
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/strict-boolean-expressions': 'off',
+      },
+    },
+    {
+      files: ['tests/**/*.{js,ts}'],
+      rules: {
+        'max-lines': ['warn', { max: 800, skipBlankLines: true, skipComments: true }],
+      },
+    },
+    {
+      // Error level for files over 1000 lines
+      files: ['**/*.{js,ts}'],
+      rules: {
+        'max-lines': ['error', { max: 1000, skipBlankLines: true, skipComments: true }],
       },
     },
   ],
