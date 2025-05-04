@@ -74,7 +74,7 @@ Examples of invalid branch names:
 
 ### Commit Message Guidelines
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. All commits **MUST** adhere to this format, which is enforced by pre-commit hooks:
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. All commits **MUST** adhere to this format, which is enforced by pre-commit hooks. See [COMMITTING.md](docs/COMMITTING.md) for a detailed guide on creating proper commits:
 
 ```
 <type>[optional scope]: <description>
@@ -163,7 +163,7 @@ Added Canadian dollars
 fix: Fixed the currency bug.
 ```
 
-A git commit template is available for assistance (automatically loaded when committing).
+A git commit template is provided in `docs/COMMIT_TEMPLATE.md` and is automatically loaded when committing. If you don't see the template when committing, run `git config --local commit.template docs/COMMIT_TEMPLATE.md` to set it up.
 
 ### Pull Request Process
 

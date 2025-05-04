@@ -1,32 +1,6 @@
-# <type>(<optional scope>): <subject>
-# |<---- Using a maximum of 72 characters ---->|
-#
-# Example types: build|chore|ci|docs|feat|fix|perf|refactor|style|test
-#
-# Format explanation:
-# - type: what kind of change this is (required)
-# - scope: what section of the codebase this change affects (optional)
-# - subject: a short description of the change (required)
-#
-# Subject line imperatives:
-# - Use imperative, present tense: "change" not "changed" nor "changes"
-# - Don't capitalize the first letter
-# - No period (.) at the end
-#
-# Body (optional): |<---- Using a maximum of 100 characters per line ---->|
-# - Explain the what and why (not how)
-# - Can use multiple lines
-# - Separate from subject with a blank line
-#
-# Footer (optional):
-# - Can reference issues and pull requests
-# - e.g., "Fixes #123", "Closes #456", "Related to #789"
-#
-# Breaking changes (if any):
-# - Start with "BREAKING CHANGE:" and describe what changed and why
-# - Or add ! after type/scope: "feat!:" or "feat(api)!:"
-#
-# Commitlint will enforce the format using these rules.
-# See https://www.conventionalcommits.org/ for more details.
-#
-# Remember to remove all lines starting with # before committing.
+# Commit Message
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
