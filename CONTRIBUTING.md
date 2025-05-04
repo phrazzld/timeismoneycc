@@ -48,7 +48,7 @@ Enhancement suggestions are welcome! Please provide:
 
 ### Commit Message Guidelines
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. All commits **MUST** adhere to this format, which is enforced by pre-commit hooks:
 
 ```
 <type>[optional scope]: <description>
@@ -58,18 +58,86 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 [optional footer(s)]
 ```
 
-Types include:
+#### Types (required)
 
-- `feat`: A new feature
+- `feat`: A new feature that adds functionality
 - `fix`: A bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, missing semi-colons, etc)
-- `refactor`: Code changes that neither fix a bug nor add a feature
-- `perf`: Performance improvements
-- `test`: Adding or fixing tests
-- `chore`: Changes to the build process or auxiliary tools
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, etc)
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `perf`: A code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `build`: Changes that affect the build system or external dependencies
+- `ci`: Changes to our CI configuration files and scripts
+- `chore`: Other changes that don't modify src or test files
+- `revert`: Reverts a previous commit
 
-Example: `feat(currency): add support for CAD currency`
+#### Scope (optional)
+
+A scope provides additional contextual information:
+
+- Scope is the part of the codebase affected, e.g. `api`, `ui`, `hooks`, etc.
+- Scope must be lowercase
+- Example: `feat(currency): add support for CAD currency`
+
+#### Subject (required)
+
+- Use imperative, present tense: "change" not "changed" nor "changes"
+- Don't capitalize the first letter
+- No period (.) at the end
+- Maximum 72 characters
+- Describes what the commit does, not what it did
+
+#### Body (optional)
+
+- Explains the motivation for the changes
+- Uses imperative, present tense
+- Includes relevant background information
+- Maximum 100 characters per line
+
+#### Footer (optional)
+
+- References related issues: `Fixes #123`, `Related to #456`
+- Notes breaking changes: start with `BREAKING CHANGE:` followed by description
+- Or mark with a `!` after the type/scope: `feat!:` or `feat(api)!:`
+
+#### Examples
+
+✅ Good:
+
+```
+feat(currency): add support for CAD currency
+
+Implement automatic detection and conversion of Canadian dollars.
+Update currency symbols and exchange rate API integration.
+
+Closes #123
+```
+
+✅ Good with breaking change:
+
+```
+feat(api)!: change authentication endpoint response format
+
+The authentication endpoint now returns a JWT token object
+instead of a string for enhanced security and flexibility.
+
+BREAKING CHANGE: Clients need to extract token from the object
+```
+
+❌ Bad:
+
+```
+Added Canadian dollars
+```
+
+❌ Bad:
+
+```
+fix: Fixed the currency bug.
+```
+
+A git commit template is available for assistance (automatically loaded when committing).
 
 ### Pull Request Process
 

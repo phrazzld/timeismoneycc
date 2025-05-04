@@ -92,6 +92,10 @@ With Time Is Money: $445.00 (61h 23m)
      - Python syntax checking
      - Symlink validation
    - Preventing binary file commits (except allowed images)
+   - Enforcing conventional commit message format:
+     - All commits must follow [Conventional Commits](https://www.conventionalcommits.org/) specification
+     - Example: `feat(ui): add dark mode support`
+     - A commit template is provided for guidance
 
 6. Open Chrome and navigate to `chrome://extensions/`
 

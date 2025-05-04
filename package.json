@@ -11,7 +11,8 @@
     "lint:all": "npm run lint && npm run lint:css && npm run format:check",
     "prepare": "pre-commit install",
     "pre-commit": "pre-commit run --all",
-    "pre-commit:install-hooks": "pre-commit install --install-hooks --hook-type pre-commit",
+    "pre-commit:install-hooks": "pre-commit install --install-hooks --hook-type pre-commit --hook-type commit-msg",
+    "commitlint": "commitlint --edit",
     "security-scan": "pre-commit run detect-private-key --all-files && pre-commit run detect-aws-credentials --all-files && pre-commit run gitleaks --all-files"
   },
   "repository": {
@@ -27,6 +28,8 @@
   "author": "phaedrus",
   "license": "MIT",
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
