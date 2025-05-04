@@ -4,7 +4,7 @@ This checklist covers Git hooks, code quality enforcement, commit conventions, a
 
 ## Git Hooks
 
-- [~] Configure pre-commit hooks
+- [x] Configure pre-commit hooks
   - [x] Install pre-commit framework
   - [x] Configure linting and formatting checks
   - [x] Add type checking
@@ -12,9 +12,9 @@ This checklist covers Git hooks, code quality enforcement, commit conventions, a
   - [x] Enforce conventional commit format
   - [x] Fix scripts.js to work properly with end-of-file-fixer hook
   - [x] Enhance pre-commit hooks with automated formatting
-- [ ] Configure post-commit hooks
-  - [ ] Set up `glance ./` to run async
-  - [ ] Generate documentation updates if needed
+- [x] Configure post-commit hooks
+  - [x] Set up `glance ./` to run async
+  - [x] Generate documentation updates if needed
 - [ ] Configure pre-push hooks
   - [ ] Run complete test suite
   - [ ] Enforce branch naming conventions

@@ -38,6 +38,7 @@ repos:
   # Local hooks
   - repo: local
     hooks:
+      # Pre-commit hooks
       # Run formatting first
       - id: prettier-fix
         name: Prettier (auto-format)
@@ -54,6 +55,7 @@ repos:
         language: system
         files: '\.ts$'
         pass_filenames: false
+        stages: [pre-commit]
 
       - id: eslint
         name: ESLint
@@ -61,6 +63,7 @@ repos:
         language: system
         files: '\.(js|ts)$'
         pass_filenames: false
+        stages: [pre-commit]
 
       - id: stylelint
         name: Stylelint
@@ -68,6 +71,7 @@ repos:
         language: system
         files: '\.css$'
         pass_filenames: false
+        stages: [pre-commit]
 
       # Run tests last
       - id: npm-test
@@ -76,3 +80,21 @@ repos:
         language: system
         files: '\.(js|ts)$'
         pass_filenames: false
+        stages: [pre-commit]
+
+      # Post-commit hooks (run asynchronously)
+      - id: post-commit-glance
+        name: Run glance asynchronously
+        entry: ./scripts/post-commit-glance.sh
+        language: system
+        pass_filenames: false
+        stages: [post-commit]
+        always_run: true
+
+      - id: post-commit-docs
+        name: Check if documentation needs updating
+        entry: ./scripts/post-commit-docs.sh
+        language: system
+        pass_filenames: false
+        stages: [post-commit]
+        always_run: true
