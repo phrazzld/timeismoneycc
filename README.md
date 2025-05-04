@@ -41,7 +41,7 @@ With Time Is Money: $445.00 (61h 23m)
 ### Prerequisites
 
 - A modern web browser (preferably Chrome)
-- Basic knowledge of HTML, CSS, and JavaScript
+- Basic knowledge of HTML, CSS, JavaScript, and TypeScript
 
 ### Local Development
 
@@ -66,17 +66,19 @@ With Time Is Money: $445.00 (61h 23m)
    npm test
    ```
 
-4. Lint code:
+4. Lint code and check types:
 
    ```bash
    npm run lint
    npm run lint:css
+   npm run typecheck
    ```
 
 5. Pre-commit hooks:
    The project uses pre-commit hooks to ensure code quality and security. These run automatically when you commit changes and include:
 
-   - Linting JavaScript and CSS
+   - Type checking TypeScript files
+   - Linting TypeScript and CSS
    - Running tests
    - Checking for trailing whitespace and file formatting
    - Preventing large file commits (>500KB)

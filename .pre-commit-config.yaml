@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
-        exclude: scripts\.js
+        exclude: 'scripts\\.(js|ts)'
       - id: check-yaml
       - id: check-json
       - id: check-added-large-files
@@ -38,30 +38,41 @@ repos:
   # Local hooks
   - repo: local
     hooks:
-      - id: npm-test
-        name: Run tests
-        entry: npm test
+      # Run formatting first
+      - id: prettier-fix
+        name: Prettier (auto-format)
+        entry: npm run format
         language: system
-        files: '\.js$'
+        files: '\.(js|ts|json|css|html|md)$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+      # Then run type checking and linting on properly formatted code
+      - id: typescript-check
+        name: TypeScript Check
+        entry: npm run typecheck
+        language: system
+        files: '\.ts$'
         pass_filenames: false
 
       - id: eslint
         name: ESLint
-        entry: npm run lint
+        entry: npm run lint:fix
         language: system
-        files: '\.js$'
+        files: '\.(js|ts)$'
         pass_filenames: false
 
       - id: stylelint
         name: Stylelint
-        entry: npm run lint:css
+        entry: npm run lint:css:fix
         language: system
         files: '\.css$'
         pass_filenames: false
 
-      - id: prettier
-        name: Prettier
-        entry: npm run format:check
+      # Run tests last
+      - id: npm-test
+        name: Run tests
+        entry: npm test
         language: system
-        files: '\.(js|json|css|html|md)$'
+        files: '\.(js|ts)$'
         pass_filenames: false

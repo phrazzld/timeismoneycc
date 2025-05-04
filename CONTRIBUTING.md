@@ -148,8 +148,20 @@ A git commit template is available for assistance (automatically loaded when com
 
 ## Coding Standards
 
+### TypeScript
+
+- Use TypeScript for all new code
+- Enable strict type checking
+- Avoid using `any` type - prefer specific types, interfaces, or `unknown`
+- Explicitly define return types for functions
+- Use ES6 features when appropriate
+- Use interfaces to define object shapes and API contracts
+- Use type guards for runtime type checking where needed
+- Keep code modular and maintain single responsibility principle
+
 ### JavaScript
 
+- Legacy JavaScript code should be gradually migrated to TypeScript
 - Use ES6 features when appropriate
 - Follow consistent indentation (2 spaces)
 - Use meaningful variable and function names
@@ -167,6 +179,47 @@ A git commit template is available for assistance (automatically loaded when com
 - Write tests for new features and bug fixes
 - Ensure existing tests pass before submitting PRs
 - Manual testing should verify functionality across different browsers
+
+## Development Environment
+
+### Automated Formatting and Linting
+
+This project uses pre-commit hooks to automatically format and lint your code before committing:
+
+1. **Formatting**: Prettier automatically formats your code when you commit
+2. **Linting**: ESLint and Stylelint automatically fix issues when possible
+3. **Type Checking**: TypeScript checks for type errors
+
+The workflow is designed to require minimal manual intervention:
+
+```bash
+# Make your changes
+git add .
+git commit -m "feat: your feature description"
+```
+
+The pre-commit hooks will:
+
+1. Format your code with Prettier
+2. Check types with TypeScript
+3. Fix linting issues with ESLint and Stylelint
+4. Run tests to verify everything works
+
+If you want to manually run these tools:
+
+```bash
+# Format code
+npm run format
+
+# Fix linting issues
+npm run lint:fix:all
+
+# Run type checking
+npm run typecheck
+
+# Run tests
+npm run test
+```
 
 ## Getting Help
 
