@@ -15,6 +15,9 @@ coverage/
 *.sublime-*
 .DS_Store
 
+# Pre-commit
+.pre-commit-cache/
+
 # Build files
 dist/
 build/

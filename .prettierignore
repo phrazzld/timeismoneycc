@@ -1,0 +1,12 @@
+# Ignore artifacts
+build/
+coverage/
+node_modules/
+
+# Ignore scripts.js until it can be properly fixed
+scripts.js
+
+# Ignore other files
+.github/
+*.log
+*.lock

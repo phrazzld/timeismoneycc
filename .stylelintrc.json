@@ -1,3 +1,13 @@
 {
-  "extends": "stylelint-config-standard"
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "font-family-name-quotes": "always-where-recommended",
+    "function-url-quotes": "always",
+    "selector-attribute-quotes": "always",
+    "declaration-no-important": true,
+    "length-zero-no-unit": true,
+    "value-keyword-case": "lower",
+    "comment-whitespace-inside": "always",
+    "no-duplicate-selectors": true
+  }
 }

@@ -1,0 +1,117 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: 'scripts\\.(js|ts)'
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-ast
+      - id: check-symlinks
+      - id: detect-aws-credentials
+        args: ['--allow-missing-credentials']
+
+  # Detect secrets using gitleaks
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.25.1
+    hooks:
+      - id: gitleaks
+        args: ['--config', '.gitleaks.toml']
+
+  # Commitlint hook
+  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+    rev: v9.10.0
+    hooks:
+      - id: commitlint
+        stages: [commit-msg]
+        additional_dependencies: ['@commitlint/config-conventional']
+
+  # Local hooks
+  - repo: local
+    hooks:
+      # Pre-commit hooks
+      # Run formatting first
+      - id: prettier-fix
+        name: Prettier (auto-format)
+        entry: npm run format
+        language: system
+        files: '\.(js|ts|json|css|html|md)$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+      # Then run type checking and linting on properly formatted code
+      - id: typescript-check
+        name: TypeScript Check
+        entry: npm run typecheck
+        language: system
+        files: '\.ts$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: eslint
+        name: ESLint
+        entry: npm run lint:fix
+        language: system
+        files: '\.(js|ts)$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: stylelint
+        name: Stylelint
+        entry: npm run lint:css:fix
+        language: system
+        files: '\.css$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+      # Run tests last
+      - id: npm-test
+        name: Run tests
+        entry: npm test
+        language: system
+        files: '\.(js|ts)$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+      # Post-commit hooks (run asynchronously)
+      - id: post-commit-glance
+        name: Run glance asynchronously
+        entry: ./scripts/post-commit-glance.sh
+        language: system
+        pass_filenames: false
+        stages: [post-commit]
+        always_run: true
+
+      - id: post-commit-docs
+        name: Check if documentation needs updating
+        entry: ./scripts/post-commit-docs.sh
+        language: system
+        pass_filenames: false
+        stages: [post-commit]
+        always_run: true
+
+      # Pre-push hooks
+      - id: full-test-suite
+        name: Run complete test suite
+        entry: npm test
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+        always_run: true
+
+      - id: validate-branch-name
+        name: Validate branch naming convention
+        entry: ./scripts/validate-branch-name.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+        always_run: true

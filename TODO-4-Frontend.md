@@ -3,6 +3,7 @@
 This checklist covers the setup of the core frontend development environment, including component tooling, testing, styling, state management, and accessibility.
 
 ## Frontend Setup
+
 - [ ] Set up Storybook
   - [ ] Initialize Storybook
   - [ ] Configure component documentation

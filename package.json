@@ -4,8 +4,26 @@
   "description": "Time Is Money browser extension for converting prices to work hours",
   "scripts": {
     "test": "jest",
-    "lint": "eslint scripts.js",
-    "lint:css": "stylelint styles.css"
+    "lint": "eslint scripts.ts",
+    "lint:fix": "eslint --fix scripts.ts",
+    "lint:css": "stylelint styles.css",
+    "lint:css:fix": "stylelint --fix styles.css",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:all": "npm run lint && npm run lint:css && npm run format:check",
+    "lint:fix:all": "npm run lint:fix && npm run lint:css:fix && npm run format",
+    "prepare": "npx --no-install pre-commit install || echo 'Skipping pre-commit installation'",
+    "pre-commit": "pre-commit run --all",
+    "pre-commit:install-hooks": "pre-commit install --install-hooks --hook-type pre-commit --hook-type commit-msg",
+    "commitlint": "commitlint --edit",
+    "security-scan": "pre-commit run detect-private-key --all-files && pre-commit run detect-aws-credentials --all-files && pre-commit run gitleaks --all-files",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "release:dry-run": "standard-version --dry-run"
   },
   "repository": {
     "type": "git",
@@ -20,10 +38,30 @@
   "author": "phaedrus",
   "license": "MIT",
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@types/jest": "^29.5.14",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "git-secrets": "^0.0.11",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "pre-commit": "^1.2.2",
+    "prettier": "^3.5.3",
+    "standard-version": "^9.5.0",
     "stylelint": "^16.1.0",
-    "stylelint-config-standard": "^36.0.0"
-  }
+    "stylelint-config-standard": "^36.0.0",
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.8.3"
+  },
+  "pre-commit": [
+    "format",
+    "typecheck",
+    "lint:fix",
+    "lint:css:fix",
+    "test"
+  ]
 }
