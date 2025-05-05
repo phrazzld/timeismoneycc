@@ -2,6 +2,13 @@
 
 BRANCH_NAME=$(git symbolic-ref --short HEAD)
 VALID_BRANCH_REGEX="^(feature|feat|bugfix|docs|refactor|test|chore|ci|build|perf)\/(dev-workflow-quality|[a-z0-9-]+)$"
+MAIN_BRANCHES="^(master|main|develop)$"
+
+# Allow main branches (master, main, develop)
+if [[ $BRANCH_NAME =~ $MAIN_BRANCHES ]]; then
+  echo "Branch '$BRANCH_NAME' is a main branch and is allowed."
+  exit 0
+fi
 
 if [[ ! $BRANCH_NAME =~ $VALID_BRANCH_REGEX ]]; then
   echo "ERROR: Branch name '$BRANCH_NAME' doesn't match the required pattern."
