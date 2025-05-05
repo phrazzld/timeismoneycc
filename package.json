@@ -12,7 +12,7 @@
     "format:check": "prettier --check .",
     "lint:all": "npm run lint && npm run lint:css && npm run format:check",
     "lint:fix:all": "npm run lint:fix && npm run lint:css:fix && npm run format",
-    "prepare": "pre-commit install",
+    "prepare": "npx --no-install pre-commit install || echo 'Skipping pre-commit installation'",
     "pre-commit": "pre-commit run --all",
     "pre-commit:install-hooks": "pre-commit install --install-hooks --hook-type pre-commit --hook-type commit-msg",
     "commitlint": "commitlint --edit",
