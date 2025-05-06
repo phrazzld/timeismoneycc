@@ -39,7 +39,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     1. `npm run lint` passes without any errors or warnings.
   - **Depends‑on:** [T002]
 
-- [ ] **T004 · Chore · P1: Update `package.json` scripts for TypeScript workflow**
+- [x] **T004 · Chore · P1: Update `package.json` scripts for TypeScript workflow**
 
   - **Context:** PLAN.md > Detailed Build Steps > 5
   - **Action:**

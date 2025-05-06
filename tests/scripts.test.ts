@@ -35,7 +35,7 @@ describe('Time Is Money DOM Elements', () => {
     copyright.innerHTML =
       'Copyright \u00A9 ' +
       new Date().getFullYear() +
-      " <a href='https://www.phaedrus.io' target='_blank'>Phaedrus</a>";
+      ' <a href="https://www.phaedrus.io" target="_blank">Phaedrus</a>';
 
     const currentYear = new Date().getFullYear().toString();
     expect(copyright.innerHTML).toContain(currentYear);
