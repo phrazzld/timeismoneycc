@@ -16,7 +16,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     2. `tsc --noEmit` (or `npm run typecheck`) completes without configuration errors.
   - **Depends‑on:** none
 
-- [ ] **T002 · Refactor · P0: Refactor `scripts.ts` for full type safety and strictness compliance**
+- [x] **T002 · Refactor · P0: Refactor `scripts.ts` for full type safety and strictness compliance**
 
   - **Context:** PLAN.md > Detailed Build Steps > 3; PLAN.md > Error & Edge‑Case Strategy
   - **Action:**

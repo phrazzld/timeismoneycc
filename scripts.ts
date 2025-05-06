@@ -1,5 +1,9 @@
 setInterval(shiftExample, 4000);
 
+/**
+ * Updates the example display to show different currency and income scenarios.
+ * Cycles through different examples of prices converted to work hours.
+ */
 function shiftExample(): void {
   const currencyCode: HTMLElement | null = document.getElementById('currency-code');
   const currencySymbol: HTMLElement | null = document.getElementById('currency-symbol');
@@ -20,12 +24,17 @@ function shiftExample(): void {
     return;
   }
 
+  const dollarSign = '$';
   const isDefaultConfig: boolean =
-    is(currencyCode, 'USD') && is(currencySymbol, '$') && is(payFrequency, 'hourly');
+    isElementText(currencyCode, 'USD') &&
+    isElementText(currencySymbol, dollarSign) &&
+    isElementText(payFrequency, 'hourly');
   const isWealthyUSD: boolean =
-    is(currencyCode, 'USD') && is(currencySymbol, '$') && is(payFrequency, 'yearly');
-  const isGBP: boolean = is(currencyCode, 'GBP') && is(currencySymbol, '£');
-  const isEuro: boolean = is(currencyCode, 'EUR') && is(currencySymbol, '€');
+    isElementText(currencyCode, 'USD') &&
+    isElementText(currencySymbol, dollarSign) &&
+    isElementText(payFrequency, 'yearly');
+  const isGBP: boolean = isElementText(currencyCode, 'GBP') && isElementText(currencySymbol, '£');
+  const isEuro: boolean = isElementText(currencyCode, 'EUR') && isElementText(currencySymbol, '€');
 
   // Handle first transition: USD $ 15.00 hourly -> USD $ 100,000.00 yearly
   if (isDefaultConfig) {
@@ -51,7 +60,7 @@ function shiftExample(): void {
   } else if (isEuro) {
     // Switch to MXN $ and Spanish product
     currencyCode.textContent = 'MXN';
-    currencySymbol.textContent = '$';
+    currencySymbol.textContent = dollarSign;
     incomeAmount.textContent = '31.30';
     payFrequency.textContent = 'hourly';
     exampleProduct.innerHTML =
@@ -59,7 +68,7 @@ function shiftExample(): void {
     examplePrice.innerHTML = '<span class="example-money"><span>$</span>1,149.00 (36h 43m)</span>';
   } else {
     currencyCode.textContent = 'USD';
-    currencySymbol.textContent = '$';
+    currencySymbol.textContent = dollarSign;
     incomeAmount.textContent = '7.25';
     payFrequency.textContent = 'hourly';
     exampleProduct.innerHTML =
@@ -68,11 +77,21 @@ function shiftExample(): void {
   }
 }
 
-function is(element: HTMLElement, val: string): boolean {
-  return element.textContent === val;
+/**
+ * Safely checks if an HTML element's text content matches the expected value.
+ * @param element - The HTML element to check
+ * @param val - The expected text content
+ * @returns True if the element exists and its text content matches the expected value
+ */
+function isElementText(element: HTMLElement | null, val: string): boolean {
+  return element !== null && element.textContent === val;
 }
 
-document.getElementById('copyright')!.innerHTML =
-  'Copyright \u00A9 ' +
-  new Date().getFullYear() +
-  ' <a href="https://www.phaedrus.io" target="_blank">Phaedrus</a>';
+// Set copyright year in footer
+const copyrightElement = document.getElementById('copyright');
+if (copyrightElement) {
+  copyrightElement.innerHTML =
+    'Copyright \u00A9 ' +
+    new Date().getFullYear() +
+    ' <a href="https://www.phaedrus.io" target="_blank">Phaedrus</a>';
+}
