@@ -50,7 +50,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     1. `package.json` scripts are updated and functional for the TypeScript workflow.
   - **Depends‑on:** [T001]
 
-- [ ] **T005 · Test · P0: Adapt and enhance `tests/scripts.test.ts` for strict TypeScript and edge cases**
+- [x] **T005 · Test · P0: Adapt and enhance `tests/scripts.test.ts` for strict TypeScript and edge cases**
 
   - **Context:** PLAN.md > Detailed Build Steps > 6; PLAN.md > Testing Strategy
   - **Action:**
