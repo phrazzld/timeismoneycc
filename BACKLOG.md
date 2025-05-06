@@ -190,3 +190,53 @@ This backlog outlines planned work, balancing immediate technical foundations an
   - **Complexity**: Complex
   - **Rationale**: Ensures the application is usable by everyone, including users with disabilities. Aligns with best practices and legal requirements.
   - **Expected Outcome**: Application audited against WCAG 2.1 AA standards. Issues remediated. Automated accessibility checks integrated into CI/Storybook.
+
+## CI Pipeline Improvements (From Code Review)
+
+- **Enhancement**: **Make HTML Validation a Blocking Failure**
+
+  - **Complexity**: Simple
+  - **Rationale**: Currently, HTML validation errors are reported but do not fail the CI job. This deviates from the "fail on any linting error" principle.
+  - **Expected Outcome**: CI workflow updated to make HTML validation a blocking failure once initial issues are resolved.
+  - **Dependencies**: Core CI Pipeline
+
+- **Enhancement**: **Make Security Scanning a Blocking Failure**
+
+  - **Complexity**: Simple
+  - **Rationale**: Currently, high or critical vulnerabilities are reported but do not fail the CI job. This deviates from the philosophy of "Finding Critical or High severity vulnerabilities is a build failure."
+  - **Expected Outcome**: CI workflow updated to make security scanning a blocking failure after addressing current vulnerabilities in development dependencies.
+  - **Dependencies**: Core CI Pipeline, Address vulnerabilities in development dependencies
+
+- **Enhancement**: **Use npm ci Instead of npm install in CI Workflow**
+
+  - **Complexity**: Simple
+  - **Rationale**: `npm ci` is preferred for CI environments for faster, more reliable, and strictly reproducible builds.
+  - **Expected Outcome**: CI workflow updated to use `npm ci` instead of `npm install` for dependency installation, with package-lock.json committed to the repository.
+  - **Dependencies**: Core CI Pipeline, Ensure package-lock.json is maintained
+
+- **Enhancement**: **Standardize Branch Naming Across Documentation and Configuration**
+
+  - **Complexity**: Simple
+  - **Rationale**: The workflow targets `master` while documentation often refers to `main`. Consistent branch naming improves clarity.
+  - **Expected Outcome**: Documentation (`PLAN.md`, `TODO.md`, `README.md`) and configuration (`ci.yml`) standardized on either `master` or `main`.
+  - **Dependencies**: None
+
+- **Enhancement**: **Expand Jest Coverage Scope Beyond scripts.{js,ts}**
+
+  - **Complexity**: Simple
+  - **Rationale**: The current `collectCoverageFrom` pattern is highly restrictive, measuring coverage for only two specific files.
+  - **Expected Outcome**: `jest.config.js` updated to include a broader pattern of files for coverage measurement as the codebase is refactored.
+  - **Dependencies**: None
+
+- **Fix**: **Resolve CI-TEST-PLAN.md Reference in README**
+
+  - **Complexity**: Simple
+  - **Rationale**: The README references a `CI-TEST-PLAN.md` file that does not appear to be part of the repository.
+  - **Expected Outcome**: Either add `CI-TEST-PLAN.md` to the repository or update the README to remove or clarify the reference.
+  - **Dependencies**: None
+
+- **Enhancement**: **Update TODO.md for Accuracy with Implementation**
+  - **Complexity**: Simple
+  - **Rationale**: Some tasks marked as complete in `TODO.md` do not accurately reflect the final implementation in `ci.yml`.
+  - **Expected Outcome**: `TODO.md` reviewed and updated to ensure task descriptions and "Done-when" criteria align with the implemented solution, documenting intentional deviations.
+  - **Dependencies**: None
