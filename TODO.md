@@ -29,7 +29,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     3. No `any` types remain in `scripts.ts` unless explicitly justified.
   - **Depends‑on:** [T001]
 
-- [ ] **T003 · Refactor · P1: Resolve all ESLint errors and warnings in `scripts.ts`**
+- [x] **T003 · Refactor · P1: Resolve all ESLint errors and warnings in `scripts.ts`**
 
   - **Context:** PLAN.md > Detailed Build Steps > 4
   - **Action:**
