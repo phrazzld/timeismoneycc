@@ -1,242 +1,310 @@
 # BACKLOG
 
-This backlog outlines planned work, balancing immediate technical foundations and development philosophy alignment with longer-term feature development, UI/UX enhancements, and strategic goals.
+This backlog outlines planned work for the "timeismoneycc" project. It balances immediate foundational needs, adherence to our Development Philosophy, and long-term strategic goals, focusing on delivering a high-quality, maintainable, and "visually stunning, high-conversion application."
 
 ## High Priority
 
-### Core Infrastructure & CI/CD
+### Core Platform & Developer Experience
 
-- **Enhancement**: **Implement Core CI Pipeline with Quality Gates**
-
-  - **Complexity**: Medium
-  - **Rationale**: Ensures code quality, prevents regressions, enforces standards (linting, type checking, tests, security), and aligns with the mandatory Automation Everywhere philosophy. Critical for stable development.
-  - **Expected Outcome**: GitHub Actions workflow validating every PR/push. Failing builds block merges based on lint errors, type errors, test failures, low coverage, or critical/high security vulnerabilities.
-  - **Dependencies**: None
-
-- **Enhancement**: **Configure Strict TypeScript Build & Remove Legacy JS**
+- **[Enhancement]**: **Configure Strict TypeScript Build & Remove All Legacy JavaScript**
 
   - **Complexity**: Medium
-  - **Rationale**: Eliminates technical debt (`scripts.js`), enforces type safety across the entire codebase, and ensures alignment with the mandatory Language Strictness philosophy.
-  - **Expected Outcome**: `scripts.js` removed. All frontend code is TypeScript, compiled via `tsc` or bundler. `tsconfig.json` enforces strict settings (`"strict": true`). Build process is clean and reliable.
+  - **Rationale**: Eliminates technical debt (`scripts.js`), enforces type safety across the entire frontend, improves code maintainability, and aligns with core Development Philosophy mandates (Language Strictness, Simplicity).
+  - **Expected Outcome**: All frontend code is TypeScript. `scripts.js` is removed. `tsconfig.json` is configured with `"strict": true` and other recommended strictness settings. Build process is clean, reliable, and type-safe.
   - **Dependencies**: None
 
-- **Enhancement**: **Integrate Security Vulnerability Scanning in CI**
+- **[Enhancement]**: **Implement Pre-commit Hooks for Automated Formatting and Linting**
+
   - **Complexity**: Simple
-  - **Rationale**: Proactively prevents introduction of known vulnerabilities via dependencies, aligning with Security Considerations and protecting users/system.
-  - **Expected Outcome**: CI pipeline fails if `npm audit` (or equivalent) detects high or critical vulnerabilities, providing immediate feedback.
-  - **Dependencies**: Core CI Pipeline
+  - **Rationale**: Enforces Coding Standards (Formatting with Prettier, Linting with ESLint) automatically before code enters the repository. Improves code consistency, catches errors early, and streamlines developer workflow, aligning with "Automation Everywhere."
+  - **Expected Outcome**: Pre-commit hooks (e.g., using Husky and lint-staged) automatically run Prettier and ESLint on staged files. Commits failing these checks are blocked.
+  - **Dependencies**: Configure Strict TypeScript Build (for ESLint to work effectively with TS)
+
+- **[Enhancement]**: **Standardize Branch Naming Convention & Update Documentation**
+  - **Complexity**: Simple
+  - **Rationale**: Improves clarity and consistency in development workflows and documentation, aligning with "Explicit is Better than Implicit." Addresses inconsistencies noted in CI configuration (`master`) vs. documentation (`main`).
+  - **Expected Outcome**: All project documentation (README.md, PLAN.md, etc.) and CI/CD configurations consistently use a single main branch name (e.g., `main`).
+  - **Dependencies**: None
+
+### Architecture & Technical Excellence
+
+- **[Refactor]**: **Isolate Core Application Logic from DOM Manipulation**
+
+  - **Complexity**: Medium
+  - **Rationale**: Critical for "Design for Testability" and "Separation of Concerns." Decouples business logic (e.g., calculator functions within `scripts.ts`) from UI rendering, enabling robust unit testing and easier maintenance.
+  - **Expected Outcome**: Core business logic extracted into pure, testable TypeScript functions or modules, independent of DOM elements. These functions can be unit-tested without a browser environment.
+  - **Dependencies**: Configure Strict TypeScript Build
+
+- **[Refactor]**: **Refactor `shiftExample` to be Data-Driven**
+  - **Complexity**: Medium
+  - **Rationale**: Reduces verbosity and improves maintainability of the `shiftExample` function by adopting a data-driven structure over extensive conditionals. Contributes to code quality, Simplicity, and Code Size Optimization.
+  - **Expected Outcome**: `shiftExample` logic is refactored to use a configuration map or array of state objects, leading to reduced lines of code, simpler logic, and easier extensibility.
+  - **Dependencies**: Isolate Core Application Logic from DOM Manipulation
+
+### Product Definition & User Value
+
+- **[Feature]**: **Define Compelling Visual Design Language & High-Conversion UX Strategy**
+
+  - **Complexity**: Medium
+  - **Rationale**: Directly supports the project's purpose of being "visually stunning" and achieving "high conversion." Lays the strategic groundwork for UI/UX development, ensuring business goals are met.
+  - **Expected Outcome**: A documented style guide (colors, typography, spacing, iconography, tone of voice) and a UX strategy document outlining key user flows, conversion funnels, and A/B testing hypotheses for the application.
+  - **Dependencies**: None
+
+- **[Enhancement]**: **Implement Foundational Atomic Design Structure & Storybook**
+  - **Complexity**: Medium
+  - **Rationale**: Adopts "Atomic Design" and "Storybook-First Development" as mandated by the Frontend Development Philosophy. Enables systematic, isolated component development, fostering reusability, testability, and a living design system.
+  - **Expected Outcome**: Project structure includes `src/components/{atoms,molecules,organisms}`. Storybook is configured, allowing components to be developed, viewed, and documented in isolation.
+  - **Dependencies**: Define Compelling Visual Design Language
 
 ### Testing & Quality Assurance
 
-- **Refactor**: **Isolate Core Logic from DOM Manipulation for Testability**
+- **[Enhancement]**: **Migrate Testing Framework from Jest to Vitest**
 
   - **Complexity**: Medium
-  - **Rationale**: Addresses poor testability by applying Separation of Concerns. Enables reliable unit testing of core state/calculation logic, aligning with Design for Testability. Critical prerequisite for meaningful coverage.
-  - **Expected Outcome**: Core business logic (e.g., within `shiftExample`) extracted into pure, testable functions, decoupled from DOM interactions.
+  - **Rationale**: Improves developer experience and CI performance with faster test execution and native ESM/TypeScript support, aligning with the goal of "Fast Feedback Loops" from the Testing Strategy.
+  - **Expected Outcome**: All existing unit tests migrated to Vitest. Test execution times demonstrably reduced. CI pipeline updated to use Vitest for test execution.
   - **Dependencies**: None
 
-- **Enhancement**: **Migrate Testing Framework from Jest to Vitest**
-
+- **[Enhancement]**: **Establish Foundational Unit Test Coverage for Core Logic**
   - **Complexity**: Medium
-  - **Rationale**: Improves developer experience and CI performance with faster test execution and better ESM/TypeScript integration, aligning with the goal of fast feedback loops.
-  - **Expected Outcome**: All unit tests migrated to Vitest. Test execution times reduced. CI pipeline updated to use Vitest.
-  - **Dependencies**: None
+  - **Rationale**: Verifies correctness of refactored core logic, prevents regressions, and builds confidence. Aligns with "Testing Strategy" requiring minimum coverage for critical components.
+  - **Expected Outcome**: Comprehensive unit tests written for the extracted pure functions (from "Isolate Core Application Logic"), achieving >90% coverage for this logic. Test coverage reported in CI.
+  - **Dependencies**: Isolate Core Application Logic from DOM Manipulation, Migrate Testing Framework from Jest to Vitest
 
-- **Enhancement**: **Establish Foundational Unit Test Coverage for Core Logic**
+### Build, CI/CD & Operational Excellence
+
+- **[Enhancement]**: **Integrate Security Vulnerability Scanning in CI (Blocking)**
+
+  - **Complexity**: Simple
+  - **Rationale**: Fulfills "Security Considerations" by proactively identifying vulnerabilities in dependencies. Aligns with CI/CD "Mandatory Stages" and the philosophy of failing builds on critical/high severity vulnerabilities.
+  - **Expected Outcome**: CI pipeline automatically runs `npm audit --audit-level=high` (or equivalent) and fails the build if new high or critical severity vulnerabilities are detected. Existing vulnerabilities addressed.
+  - **Dependencies**: Core CI Pipeline Setup
+
+- **[Enhancement]**: **Use `npm ci` for Reproducible Builds in CI Workflow**
+
+  - **Complexity**: Simple
+  - **Rationale**: `npm ci` provides faster, more reliable, and strictly reproducible builds compared to `npm install` in CI environments, as per best practices and "Reproducible Builds" philosophy.
+  - **Expected Outcome**: CI workflow updated to use `npm ci` for installing dependencies. `package-lock.json` is consistently maintained and used.
+  - **Dependencies**: Core CI Pipeline Setup
+
+- **[Enhancement]**: **Make HTML Validation Blocking in CI**
+
+  - **Complexity**: Simple
+  - **Rationale**: Enforces markup quality by treating HTML validation errors as build failures, aligning with the principle of failing on any linting/validation error.
+  - **Expected Outcome**: CI workflow step for HTML validation is configured to fail the build upon detecting errors, once initial validation issues are resolved.
+  - **Dependencies**: Core CI Pipeline Setup
+
+- **[Enhancement]**: **Implement Comprehensive Build-Time Asset Minification**
   - **Complexity**: Medium
-  - **Rationale**: Verifies correctness of refactored core logic, prevents regressions, and builds confidence. Aligns with Testing Strategy requiring minimum coverage.
-  - **Expected Outcome**: Unit tests written for the extracted pure functions, achieving initial high coverage (e.g., 90%+) for this critical logic. Overall project coverage increases.
-  - **Dependencies**: Isolate Core Logic, Migrate Testing Framework
-
-### User Experience (UX/UI) & Core Value
-
-- **Feature**: **Define Compelling Visual Design Language & High-Conversion Strategy**
-
-  - **Complexity**: Medium
-  - **Rationale**: Establishes the aesthetic direction and user flow strategy required to meet the business goal of a "visually stunning" and "high conversion" application. Provides foundation for UI implementation.
-  - **Expected Outcome**: Documented style guide (colors, typography, spacing, tone) and a UX strategy outlining key user flows and conversion optimization tactics for the redesign.
-  - **Dependencies**: None
-
-- **Enhancement**: **Implement Foundational Atomic Design Structure & Storybook**
-  - **Complexity**: Medium
-  - **Rationale**: Sets up the component architecture (Atomic Design) and development environment (Storybook) mandated by the Frontend Philosophy. Essential for building a scalable and maintainable UI system for the redesign.
-  - **Expected Outcome**: Project structure includes `src/components/{atoms,molecules,...}`. Storybook is configured to develop and document components in isolation.
-  - **Dependencies**: Define Compelling Visual Design Language (provides input for initial atoms)
+  - **Rationale**: Reduces production bundle sizes for HTML, CSS, and JavaScript, leading to faster load times and improved user experience. Aligns with Code Size Optimization goals.
+  - **Expected Outcome**: Build process includes steps for minifying HTML, CSS, and JS assets. Measurable reduction (e.g., HTML 10-25%, CSS 15-30%, JS 20-50%) in asset sizes.
+  - **Dependencies**: Configure Strict TypeScript Build
 
 ## Medium Priority
 
 ### Architecture & Code Quality
 
-- **Refactor**: **Organize Codebase by Feature/Domain**
+- **[Refactor]**: **Organize Codebase by Feature/Domain (Package-by-Feature)**
 
   - **Complexity**: Medium
-  - **Rationale**: Improves modularity, maintainability, and developer understanding by grouping related code together, aligning with Architecture Guidelines (Package by Feature).
-  - **Expected Outcome**: `src/` directory reorganized into feature-based folders (e.g., `src/calculator/`, `src/landing/`, `src/core/`), reducing coupling and improving navigation.
-  - **Dependencies**: None
+  - **Rationale**: Improves "Modularity" and maintainability by structuring code around business capabilities, as per "Package/Module Structure: Organize by Feature, Not Type."
+  - **Expected Outcome**: `src/` directory is reorganized into feature-based folders (e.g., `src/calculator/`, `src/shared/`, `src/core/`). Reduced coupling between features and improved code navigation.
+  - **Dependencies**: Configure Strict TypeScript Build
 
-- **Enhancement**: **Implement Structured Logging Utility**
+- **[Enhancement]**: **Implement Structured Logging Utility (e.g., Pino, Winston)**
+
   - **Complexity**: Medium
-  - **Rationale**: Replaces inconsistent `console.log` calls with a standardized logging approach (JSON format), enabling effective monitoring, debugging, and observability as per Logging Strategy.
-  - **Expected Outcome**: Centralized logging utility implemented. Logs are structured JSON including level, timestamp, message, and optional context. Minimal `console.log` usage remains.
+  - **Rationale**: Adopts "Structured Logging is Mandatory" from the Logging Strategy. Replaces `console.log` with a robust logger outputting JSON, enabling effective monitoring, filtering, and analysis.
+  - **Expected Outcome**: A chosen structured logging library is integrated. Application logs are in JSON format, including standard fields like timestamp, level, message, and `correlation_id` where applicable. `console.log` usage is minimized.
   - **Dependencies**: None
 
-### Build, CI/CD, & Operations
-
-- **Enhancement**: **Set Up Automated Dependency Updates (Dependabot/Renovate)**
-
-  - **Complexity**: Simple
-  - **Rationale**: Reduces manual effort, keeps dependencies current, and mitigates security risks proactively, aligning with Disciplined Dependency Management and Automation Everywhere.
-  - **Expected Outcome**: Dependabot or Renovate configured to automatically create PRs for dependency updates, validated by the CI pipeline.
-  - **Dependencies**: Core CI Pipeline
-
-- **Enhancement**: **Implement Automated Changelog Generation**
-  - **Complexity**: Simple
-  - **Rationale**: Ensures consistent release notes, supports Semantic Versioning, and improves communication by automating changelog creation based on Conventional Commits.
-  - **Expected Outcome**: `CHANGELOG.md` automatically generated and updated as part of the release process integrated into CI/CD. Requires enforcement of Conventional Commits.
-  - **Dependencies**: Core CI Pipeline, Conventional Commit Enforcement (via linting/hooks)
-
-### UI/UX & Design System
-
-- **Feature**: **Implement High-Conversion UI Redesign based on Strategy**
-
+- **[Refactor]**: **Adopt Utility-First CSS Framework (e.g., Tailwind CSS) & Remove Bootstrap 3**
   - **Complexity**: Complex
-  - **Rationale**: Directly addresses the core business goal by implementing the visual design and UX strategy defined earlier, focusing on optimizing key user actions (e.g., downloads).
-  - **Expected Outcome**: Key pages/flows redesigned and implemented using the new design language and atomic components. Measurable improvement in conversion rates via analytics or A/B testing.
-  - **Dependencies**: Define Compelling Visual Design Language, Implement Foundational Atomic Design Structure & Storybook
+  - **Rationale**: Modernizes styling approach, enforces design consistency via design tokens, and significantly reduces CSS bundle size by purging unused styles (replacing large Bootstrap 3). Aligns with Frontend Philosophy (Tailwind CSS) and Code Size Optimization.
+  - **Expected Outcome**: Bootstrap 3 CSS is removed. Tailwind CSS is integrated and configured. All new and refactored components use Tailwind utilities. Final CSS bundle size drastically reduced (e.g., >80%).
+  - **Dependencies**: Develop Core Atomic Components in Storybook (components will use new styling)
 
-- **Enhancement**: **Develop Core Atomic Components in Storybook**
+### Product Definition & User Value
+
+- **[Enhancement]**: **Develop Core Atomic Components (Atoms & Molecules) in Storybook**
+
   - **Complexity**: Medium
-  - **Rationale**: Builds the reusable UI building blocks (buttons, inputs, text styles, etc.) defined by the design language within the Storybook environment, enabling the UI redesign.
-  - **Expected Outcome**: Library of core Atom and Molecule components built, tested, and documented in Storybook, ready for use in Organisms and Pages.
-  - **Dependencies**: Implement Foundational Atomic Design Structure & Storybook
+  - **Rationale**: Builds the foundational UI elements (buttons, inputs, typography, etc.) based on the defined Visual Design Language, following "Atomic Design" and "Storybook-First" principles.
+  - **Expected Outcome**: A library of reusable, well-tested, and documented Atom and Molecule components built in Storybook. Components adhere to accessibility best practices.
+  - **Dependencies**: Implement Foundational Atomic Design Structure & Storybook, Define Compelling Visual Design Language
 
-### Testing & Quality Assurance
+- **[Feature]**: **Implement High-Conversion UI Redesign for Key Application Flows**
+  - **Complexity**: Complex
+  - **Rationale**: Delivers on the core business goal of a "visually stunning" and "high conversion" application by implementing the new design and UX strategy using the developed atomic components.
+  - **Expected Outcome**: Key application pages/flows (e.g., calculator interface, landing/conversion page) are redesigned and implemented. Initial analytics set up to track conversion metrics.
+  - **Dependencies**: Develop Core Atomic Components in Storybook, Define Compelling Visual Design Language & High-Conversion UX Strategy
 
-- **Enhancement**: **Enforce Test Coverage Thresholds in CI**
+### Build, CI/CD & Operational Excellence
+
+- **[Enhancement]**: **Enforce Test Coverage Thresholds in CI**
+
   - **Complexity**: Simple
-  - **Rationale**: Ensures minimum quality standards are maintained over time by failing builds if coverage drops below defined levels (e.g., 85% overall), aligning with Test Coverage Enforcement philosophy.
-  - **Expected Outcome**: CI pipeline includes a coverage check step that enforces configured thresholds.
-  - **Dependencies**: Establish Foundational Unit Test Coverage
+  - **Rationale**: Ensures adherence to "Test Coverage Enforcement" by failing builds if coverage drops below defined targets (e.g., 80% overall, 95% for core logic).
+  - **Expected Outcome**: CI pipeline includes a coverage check step (e.g., using Vitest's coverage reporting) that enforces configured thresholds.
+  - **Dependencies**: Establish Foundational Unit Test Coverage for Core Logic, Expand Test Coverage Scope in Configuration
+
+- **[Enhancement]**: **Expand Test Coverage Scope in Configuration**
+
+  - **Complexity**: Simple
+  - **Rationale**: Adjusts test coverage configuration (e.g., Vitest `collectCoverageFrom`) to accurately reflect the growing TypeScript codebase beyond initially targeted files, for meaningful coverage metrics.
+  - **Expected Outcome**: Test coverage configuration in `vitest.config.ts` (or equivalent) includes all relevant source files (e.g., `src/**/*.ts`).
+  - **Dependencies**: Migrate Testing Framework from Jest to Vitest
+
+- **[Enhancement]**: **Set Up Automated Dependency Updates (Dependabot/Renovate)**
+
+  - **Complexity**: Simple
+  - **Rationale**: Aligns with "Disciplined Dependency Management" and "Automation Everywhere." Reduces manual effort, keeps dependencies current, and mitigates security risks.
+  - **Expected Outcome**: Dependabot or Renovate Bot is configured to automatically create PRs for dependency updates, which are then validated by the CI pipeline.
+  - **Dependencies**: Integrate Security Vulnerability Scanning in CI (Blocking)
+
+- **[Enhancement]**: **Implement Conventional Commits and Automated Changelog Generation**
+  - **Complexity**: Medium
+  - **Rationale**: Mandates "Conventional Commits" for standardized commit messages, enabling "Automated Version Bumping and Changelog Generation." Improves release process and communication.
+  - **Expected Outcome**: Commit messages are linted to enforce Conventional Commits format (via pre-commit hooks and CI). `CHANGELOG.md` is automatically generated and updated as part of an automated or semi-automated release process.
+  - **Dependencies**: Pre-commit Hooks for Automated Formatting and Linting, Core CI Pipeline Setup
+
+### Code Quality & Optimization
+
+- **[Enhancement]**: **Identify and Remove Unused/Dead Code in TypeScript**
+
+  - **Complexity**: Medium
+  - **Rationale**: Reduces final bundle size and improves codebase maintainability by removing unused functions, variables, and imports. Aligns with Simplicity and Code Size Optimization.
+  - **Expected Outcome**: Codebase scanned using tools like `ts-prune` or ESLint rules. Unused code identified and removed, leading to a smaller, cleaner codebase (e.g., 5-15% JS bundle reduction).
+  - **Dependencies**: Configure Strict TypeScript Build
+
+- **[Enhancement]**: **Optimize Image Assets for Web Delivery**
+  - **Complexity**: Simple
+  - **Rationale**: Reduces page weight by compressing images (e.g., `images/icon.png`), resizing to appropriate dimensions, and using optimal formats (e.g., WebP). Improves load times and user experience.
+  - **Expected Outcome**: Image assets optimized, resulting in significant file size reduction (e.g., 10-70%) with no perceptible loss in quality.
+  - **Dependencies**: None
 
 ## Low Priority
 
-### Architecture & Code Quality
+### Code Quality & Minor Optimizations
 
-- **Refactor**: **Standardize CSS Styling Approach (e.g., Tailwind CSS or BEM)**
-  - **Complexity**: Medium
-  - **Rationale**: Improves CSS maintainability, consistency, and scalability. Replaces ad-hoc styling or aligns legacy styles (BEM) with a chosen modern approach (like utility-first Tailwind, often paired with design systems).
-  - **Expected Outcome**: Consistent application of the chosen styling methodology (e.g., Tailwind utilities configured with design tokens, or strict BEM). Legacy/inconsistent styles refactored.
-  - **Dependencies**: Develop Core Atomic Components (styling applied here)
+- **[Enhancement]**: **Audit and Remove Unused `devDependencies`**
+
+  - **Complexity**: Simple
+  - **Rationale**: Improves project hygiene, reduces `node_modules` size, and speeds up installation times (especially in CI). Contributes to a leaner development environment.
+  - **Expected Outcome**: Unnecessary `devDependencies` removed from `package.json`. Faster CI setup times.
+  - **Dependencies**: None
+
+- **[Refactor]**: **Review and Refine Code Comments for Clarity and Conciseness**
+
+  - **Complexity**: Simple
+  - **Rationale**: Aligns with "Document Decisions, Not Mechanics." Ensures comments explain the _why_ for non-obvious code, removing redundant or "what" comments.
+  - **Expected Outcome**: Code comments are more impactful, focusing on rationale and complex logic. Redundant comments are removed.
+  - **Dependencies**: None
+
+- **[Refactor]**: **Consolidate Repeated DOM Element Selections**
+
+  - **Complexity**: Simple
+  - **Rationale**: Reduces code repetition by caching DOM selections, minimizing LOC and potentially improving minor performance aspects.
+  - **Expected Outcome**: Repeated `document.getElementById()` calls for the same elements are refactored to use cached variables. Minor LOC reduction.
+  - **Dependencies**: Isolate Core Application Logic from DOM Manipulation
+
+- **[Refactor]**: **Consolidate or Inline Single-Use Helper Functions**
+  - **Complexity**: Simple
+  - **Rationale**: Reduces abstraction overhead by inlining simple, single-use functions where appropriate, potentially minimizing LOC and simplifying code flow.
+  - **Expected Outcome**: Minor LOC reduction, simpler code flow in specific areas.
+  - **Dependencies**: None
+
+### Documentation & Consistency
+
+- **[Fix]**: **Resolve `CI-TEST-PLAN.md` Reference in README.md**
+
+  - **Complexity**: Simple
+  - **Rationale**: Corrects or removes reference to non-existent `CI-TEST-PLAN.md` in `README.md` for clarity and accuracy of documentation.
+  - **Expected Outcome**: `README.md` updated to remove or clarify the reference, or the `CI-TEST-PLAN.md` file is added if deemed relevant.
+  - **Dependencies**: None
+
+- **[Enhancement]**: **Update `TODO.md` for Accuracy with CI Implementation**
+  - **Complexity**: Simple
+  - **Rationale**: Ensures `TODO.md` accurately reflects the actual CI implementation and decisions made, maintaining documentation integrity.
+  - **Expected Outcome**: `TODO.md` reviewed and updated to align with the implemented `ci.yml`, documenting any intentional deviations or completed tasks accurately.
+  - **Dependencies**: None
 
 ### Operational Excellence & Observability
 
-- **Enhancement**: **Implement Basic Performance Monitoring (Frontend)**
+- **[Enhancement]**: **Implement Basic Frontend Performance Monitoring (Core Web Vitals)**
   - **Complexity**: Simple
-  - **Rationale**: Provides initial visibility into user-perceived performance (e.g., Core Web Vitals), enabling identification of major bottlenecks. Aligns with Observability goals.
-  - **Expected Outcome**: Basic Real User Monitoring (RUM) or integration with an analytics tool to capture key frontend performance metrics.
-  - **Dependencies**: Structured Logging (potentially for sending metrics)
-
-### Documentation & Developer Experience
-
-- **Fix**: **Align Development Philosophy Documentation with Reality**
-  - **Complexity**: Simple
-  - **Rationale**: Ensures documentation accurately reflects the chosen technologies (e.g., Vitest instead of Jest), tools, and practices, reducing confusion for developers.
-  - **Expected Outcome**: `DEVELOPMENT_PHILOSOPHY*.md` files updated to match the current stack and decisions made (testing framework, component library, state management choices, etc.).
-  - **Dependencies**: Key technical decisions finalized (Testing Framework, UI Library, etc.)
+  - **Rationale**: Provides initial visibility into "Observability" for user-perceived performance. Allows identification of major bottlenecks and tracks Core Web Vitals (LCP, FID, CLS).
+  - **Expected Outcome**: A lightweight analytics tool or browser API integration is set up to capture and report Core Web Vitals for the application.
+  - **Dependencies**: Implement High-Conversion UI Redesign for Key Application Flows (to have a deployed app to monitor)
 
 ## Future Considerations
 
 ### Innovation & Research
 
-- **Research**: **Explore Advanced Conversion Optimization Techniques (e.g., A/B Testing Tools, Heatmaps)**
+- **[Research]**: **Explore Advanced Conversion Optimization Techniques (A/B Testing, Heatmaps)**
 
   - **Complexity**: Medium
-  - **Rationale**: Investigates tools and methods for data-driven optimization beyond the initial redesign, enabling continuous improvement of business goals.
-  - **Expected Outcome**: Evaluation report on suitable A/B testing frameworks, analytics tools (heatmaps, session replay), and strategies for ongoing conversion optimization.
+  - **Rationale**: Investigates data-driven optimization tools and methodologies for continuous improvement of business goals (conversion rates) post-initial redesign.
+  - **Expected Outcome**: Evaluation report on suitable A/B testing frameworks, heatmap tools, session replay analytics, and strategies for ongoing conversion optimization.
 
-- **Research**: **Investigate Novel UI Features or Interactions**
+- **[Research]**: **Investigate Novel UI Features or Interactions (e.g., Micro-animations)**
 
   - **Complexity**: Medium
-  - **Rationale**: Explores creative ways to enhance user delight or engagement (e.g., micro-animations, interactive elements) beyond core functionality.
-  - **Expected Outcome**: Prototypes or feasibility studies for innovative UI concepts.
+  - **Rationale**: Explores creative enhancements to boost user engagement and delight beyond core functionality, potentially creating competitive differentiation.
+  - **Expected Outcome**: Prototypes or feasibility studies for innovative UI concepts that align with the brand and user experience goals.
 
-- **Research**: **Evaluate WebAssembly (WASM) for Performance-Critical Calculations**
+- **[Research]**: **Evaluate WebAssembly (WASM) for Performance-Critical Calculations**
   - **Complexity**: Complex
-  - **Rationale**: Explores potential performance gains for complex calculations, should they become a bottleneck in the future.
-  - **Expected Outcome**: Feasibility report and potential benchmarks comparing JS vs WASM for specific calculation logic.
+  - **Rationale**: Assesses potential performance gains for complex client-side calculations if they become bottlenecks, particularly for a productivity application.
+  - **Expected Outcome**: Feasibility report and benchmarks comparing JavaScript vs. WASM for specific, identified calculation-intensive logic.
 
-### Operational Excellence
+### Operational Excellence & Scalability
 
-- **Enhancement**: **Implement End-to-End (E2E) Testing for Critical Flows**
+- **[Enhancement]**: **Implement End-to-End (E2E) Testing for Critical Flows**
 
   - **Complexity**: Complex
-  - **Rationale**: Provides highest confidence by testing user journeys through the deployed application, verifying integration of all parts. Mandatory per Testing Strategy for critical flows.
-  - **Expected Outcome**: E2E test suite (using Cypress or Playwright) covering key user scenarios (e.g., successful download flow), integrated into CI/CD (potentially run less frequently).
+  - **Rationale**: Ensures confidence in user journeys through the deployed application, verifying integration of all components. Mandatory for critical flows per Testing Strategy.
+  - **Expected Outcome**: E2E test suite (e.g., using Cypress or Playwright) covering key user scenarios, integrated into CI/CD (potentially run on a schedule or pre-production).
 
-- **Enhancement**: **Integrate Error Tracking Platform (e.g., Sentry)**
+- **[Enhancement]**: **Integrate Error Tracking Platform (e.g., Sentry)**
   - **Complexity**: Medium
-  - **Rationale**: Provides real-time visibility into production errors, enabling faster detection and resolution of issues impacting users.
-  - **Expected Outcome**: Errors are automatically reported to Sentry (or similar) with context from structured logs.
+  - **Rationale**: Provides real-time visibility into production errors, enabling faster detection, diagnosis, and resolution of issues impacting users.
+  - **Expected Outcome**: Frontend errors are automatically reported to an error tracking platform with relevant context (e.g., from structured logs, user agent, release version).
 
-### Feature Expansion
+### Feature Expansion & Market Reach
 
-- **Feature**: **Implement Internationalization (i18n)**
+- **[Feature]**: **Implement Internationalization (i18n)**
 
   - **Complexity**: Complex
-  - **Rationale**: Expands the application's reach to a global audience by supporting multiple languages and locales.
-  - **Expected Outcome**: Framework for managing translations implemented. User-facing text extracted. Language selection mechanism available.
+  - **Rationale**: Expands the application's reach to a global audience by supporting multiple languages and locales, potentially increasing user adoption and market share.
+  - **Expected Outcome**: A robust i18n framework implemented. User-facing text extracted into resource files. Language selection mechanism available to users.
 
-- **Enhancement**: **Achieve Full Accessibility (WCAG 2.1 AA) Compliance**
+- **[Enhancement]**: **Achieve Full Accessibility (WCAG 2.1 AA) Compliance**
   - **Complexity**: Complex
-  - **Rationale**: Ensures the application is usable by everyone, including users with disabilities. Aligns with best practices and legal requirements.
-  - **Expected Outcome**: Application audited against WCAG 2.1 AA standards. Issues remediated. Automated accessibility checks integrated into CI/Storybook.
+  - **Rationale**: Ensures the application is usable by all users, including those with disabilities. Aligns with ethical best practices, legal requirements, and can expand user base.
+  - **Expected Outcome**: Application audited and remediated for WCAG 2.1 AA standards. Automated accessibility checks integrated into CI/Storybook. Accessibility statement published.
 
-## CI Pipeline Improvements (From Code Review)
+## Code Size Optimization
 
-- **Enhancement**: **Make HTML Validation a Blocking Failure**
+### Critical
 
-  - **Complexity**: Simple
-  - **Rationale**: Currently, HTML validation errors are reported but do not fail the CI job. This deviates from the "fail on any linting error" principle.
-  - **Expected Outcome**: CI workflow updated to make HTML validation a blocking failure once initial issues are resolved.
-  - **Dependencies**: Core CI Pipeline
-
-- **Enhancement**: **Make Security Scanning a Blocking Failure**
+- **[Size Optimization]**: **Remove Legacy `scripts.js` File After Full TypeScript Migration**
 
   - **Complexity**: Simple
-  - **Rationale**: Currently, high or critical vulnerabilities are reported but do not fail the CI job. This deviates from the philosophy of "Finding Critical or High severity vulnerabilities is a build failure."
-  - **Expected Outcome**: CI workflow updated to make security scanning a blocking failure after addressing current vulnerabilities in development dependencies.
-  - **Dependencies**: Core CI Pipeline, Address vulnerabilities in development dependencies
+  - **Rationale**: The `scripts.js` file is a legacy JavaScript version of `scripts.ts`. Once the TypeScript version is fully functional and adopted (as per "Configure Strict TypeScript Build & Remove Legacy JS"), this file becomes pure duplication, increasing codebase size and maintenance overhead.
+  - **Expected Outcome**: Removal of `scripts.js` (approx. 50-100 LOC reduction). Reduces final bundle size by eliminating a redundant asset. Simplifies codebase and build configuration.
+  - **Dependencies**: Configure Strict TypeScript Build & Remove Legacy JS
 
-- **Enhancement**: **Use npm ci Instead of npm install in CI Workflow**
+- **[Size Optimization]**: **Replace Bootstrap 3 CSS with a Purged Utility-First CSS Framework (e.g., Tailwind CSS)**
+  - **Complexity**: Complex
+  - **Rationale**: Bootstrap 3 is a large CSS framework (~150KB uncompressed) and likely includes many unused styles for a simple application/extension. Migrating to a utility-first framework like Tailwind CSS with its JIT/purging capabilities will drastically reduce the final CSS bundle size to only what is used. This aligns with the goal to "Standardize CSS Styling Approach".
+  - **Expected Outcome**: Significant reduction in delivered CSS size (potentially >80% reduction, e.g., from ~150KB to <30KB). Faster style rendering. Modernized styling approach.
+  - **Dependencies**: Adopt Utility-First CSS Framework (e.g., Tailwind CSS) & Remove Bootstrap 3
 
-  - **Complexity**: Simple
-  - **Rationale**: `npm ci` is preferred for CI environments for faster, more reliable, and strictly reproducible builds.
-  - **Expected Outcome**: CI workflow updated to use `npm ci` instead of `npm install` for dependency installation, with package-lock.json committed to the repository.
-  - **Dependencies**: Core CI Pipeline, Ensure package-lock.json is maintained
+### High
 
-- **Enhancement**: **Standardize Branch Naming Across Documentation and Configuration**
-
-  - **Complexity**: Simple
-  - **Rationale**: The workflow targets `master` while documentation often refers to `main`. Consistent branch naming improves clarity.
-  - **Expected Outcome**: Documentation (`PLAN.md`, `TODO.md`, `README.md`) and configuration (`ci.yml`) standardized on either `master` or `main`.
-  - **Dependencies**: None
-
-- **Enhancement**: **Expand Jest Coverage Scope Beyond scripts.{js,ts}**
-
-  - **Complexity**: Simple
-  - **Rationale**: The current `collectCoverageFrom` pattern is highly restrictive, measuring coverage for only two specific files.
-  - **Expected Outcome**: `jest.config.js` updated to include a broader pattern of files for coverage measurement as the codebase is refactored.
-  - **Dependencies**: None
-
-- **Fix**: **Resolve CI-TEST-PLAN.md Reference in README**
-
-  - **Complexity**: Simple
-  - **Rationale**: The README references a `CI-TEST-PLAN.md` file that does not appear to be part of the repository.
-  - **Expected Outcome**: Either add `CI-TEST-PLAN.md` to the repository or update the README to remove or clarify the reference.
-  - **Dependencies**: None
-
-- **Enhancement**: **Update TODO.md for Accuracy with Implementation**
-  - **Complexity**: Simple
-  - **Rationale**: Some tasks marked as complete in `TODO.md` do not accurately reflect the final implementation in `ci.yml`.
-  - **Expected Outcome**: `TODO.md` reviewed and updated to ensure task descriptions and "Done-when" criteria align with the implemented solution, documenting intentional deviations.
-  - **Dependencies**: None
+- **[Size Optimization]**: **Implement Comprehensive Build-Time Asset Minification**
+  - **Complexity**: Medium
+  - **Rationale**: Minification of HTML, CSS, and JavaScript assets (compiled from TypeScript) removes unnecessary characters (whitespace, comments, shortening variable names) without altering functionality, leading to significant file size reductions for production deployments.
+  - **Expected Outcome**: 10-25% reduction in HTML size, 15-30% reduction in CSS size, 20-50% reduction in JavaScript bundle size. Faster application load times.
+  - **Dependencies**: Configure Strict TypeScript Build & Remove All Legacy JavaScript
