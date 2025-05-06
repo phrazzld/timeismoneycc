@@ -62,7 +62,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     2. Test suite provides meaningful coverage for core logic and edge cases.
   - **Depends‑on:** [T002]
 
-- [ ] **T006 · Test · P1: Ensure all tests pass in `tests/scripts.test.ts`**
+- [x] **T006 · Test · P1: Ensure all tests pass in `tests/scripts.test.ts`**
 
   - **Context:** PLAN.md > Detailed Build Steps > 6
   - **Action:**
