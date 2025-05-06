@@ -55,6 +55,7 @@ jobs:
         format: text
         log_level: INFO
         extra: --show-warnings
+        blacklist: node_modules/
 
   typecheck:
     name: TypeScript Check
