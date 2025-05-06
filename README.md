@@ -67,6 +67,42 @@ This project uses pre-commit, post-commit, and pre-push hooks:
 - Run complete test suite
 - Validate branch naming convention (see CONTRIBUTING.md for naming guidelines)
 
+## Continuous Integration
+
+This project uses GitHub Actions for CI to ensure code quality. The CI pipeline runs automatically on pull requests and pushes to the `master` branch.
+
+### Quality Gates
+
+The CI pipeline enforces the following quality gates:
+
+- **Lint**: ESLint, CSS linting, Prettier formatting, and HTML validation
+- **TypeScript**: Static type checking with TypeScript
+- **Tests**: Jest tests with coverage requirements
+- **Security**: npm audit for high and critical vulnerabilities
+
+All quality gates must pass for a PR to be mergeable when branch protection rules are enabled.
+
+### Running Checks Locally
+
+Run these commands locally before pushing to avoid CI failures:
+
+```bash
+# Run all checks at once
+npm run lint:all
+npm run typecheck
+npm test -- --coverage
+npm audit --audit-level=high
+```
+
+### Troubleshooting CI Failures
+
+- **Lint failures**: Look for ESLint or Prettier errors in the logs. Fix with `npm run lint:fix:all`.
+- **TypeScript errors**: Check the error message for file and line information. Fix type issues accordingly.
+- **Test failures**: Run tests locally with `npm test` to debug. Check for broken assertions or coverage issues.
+- **Security issues**: npm audit will show specific packages with vulnerabilities. Update or replace affected dependencies.
+
+Detailed CI test procedures are documented in [CI-TEST-PLAN.md](CI-TEST-PLAN.md).
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

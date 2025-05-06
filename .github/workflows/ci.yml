@@ -6,18 +6,47 @@ on:
   pull_request:
     branches: [ master ]
 
+# Define permissions needed by this workflow
+permissions:
+  contents: read
+  # Required for actions/upload-artifact
+  actions: read
+  # For commenting on PRs if needed in the future
+  pull-requests: read
+
 jobs:
-  validate:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20 # Latest LTS version
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run ESLint
+      run: npm run lint
+
+    - name: Run CSS Linting
+      run: npm run lint:css
+
+    - name: Check Formatting
+      run: npm run format:check
 
     - name: Validate HTML
       uses: Cyb3r-Jak3/html5validator-action@v7.2.0
@@ -27,30 +56,90 @@ jobs:
         log_level: INFO
         extra: --show-warnings
 
-    - name: Validate CSS
-      run: |
-        npm install -g stylelint stylelint-config-standard
-        echo "{ \"extends\": \"stylelint-config-standard\" }" > .stylelintrc.json
-        npx stylelint "**/*.css" || echo "Stylelint found issues - these will be addressed in a future task"
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
 
-    - name: Install ESLint
-      run: npm install -g eslint
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Lint JavaScript
-      run: |
-        echo "module.exports = { extends: 'eslint:recommended', env: { browser: true }, parserOptions: { ecmaVersion: 2018 } };" > .eslintrc.js
-        eslint scripts.js || echo "ESLint found issues - these will be addressed in a future task"
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20 # Latest LTS version
 
-    # Run tests and coverage
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
-    - name: Run tests
-      run: npm test
+    - name: Run TypeScript Type Checking
+      run: npm run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20 # Latest LTS version
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests with coverage enforcement
+      run: npm test -- --coverage
 
     - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
+      uses: actions/upload-artifact@v4
       with:
-        directory: ./coverage/
-        fail_ci_if_error: false
-        verbose: true
+        name: coverage-report
+        path: ./coverage/
+        retention-days: 14
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20 # Latest LTS version
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run security scan for high and critical vulnerabilities
+      run: npm audit --audit-level=high
