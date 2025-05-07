@@ -83,7 +83,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     2. `npm test` still runs correctly using only `tests/scripts.test.ts`.
   - **Depends‑on:** [T006]
 
-- [ ] **T008 · Chore · P1: Build `scripts.ts` to `dist/scripts.js`**
+- [x] **T008 · Chore · P1: Build `scripts.ts` to `dist/scripts.js`**
 
   - **Context:** PLAN.md > Detailed Build Steps > 8
   - **Action:**
