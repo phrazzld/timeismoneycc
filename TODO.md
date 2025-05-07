@@ -116,7 +116,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     2. The application still builds and runs correctly.
   - **Depends‑on:** [T009]
 
-- [ ] **T011 · Test · P0: Perform manual end-to-end verification of UI functionality**
+- [x] **T011 · Test · P0: Perform manual end-to-end verification of UI functionality**
 
   - **Context:** PLAN.md > Detailed Build Steps > 11; PLAN.md > Risk Matrix
   - **Action:**
