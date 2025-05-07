@@ -93,7 +93,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     2. `dist/scripts.js` is generated from `scripts.ts`.
   - **Depends‑on:** [T003, T004]
 
-- [ ] **T009 · Refactor · P1: Update `index.html` to reference compiled `dist/scripts.js`**
+- [x] **T009 · Refactor · P1: Update `index.html` to reference compiled `dist/scripts.js`**
 
   - **Context:** PLAN.md > Detailed Build Steps > 9
   - **Action:**
