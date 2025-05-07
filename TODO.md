@@ -106,7 +106,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     3. Check the browser console for any script loading errors.
   - **Depends‑on:** [T008]
 
-- [ ] **T010 · Chore · P2: Remove legacy `scripts.js` source file from project root**
+- [x] **T010 · Chore · P2: Remove legacy `scripts.js` source file from project root**
 
   - **Context:** PLAN.md > Detailed Build Steps > 10
   - **Action:**
