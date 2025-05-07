@@ -73,7 +73,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     2. Test coverage meets or exceeds the existing project threshold.
   - **Depends‑on:** [T005]
 
-- [ ] **T007 · Chore · P2: Remove legacy JavaScript test file `tests/scripts.test.js`**
+- [x] **T007 · Chore · P2: Remove legacy JavaScript test file `tests/scripts.test.js`**
 
   - **Context:** PLAN.md > Detailed Build Steps > 7
   - **Action:**
