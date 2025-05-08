@@ -3,7 +3,13 @@
  */
 
 // Import functions from scripts.ts for testing
-import { isElementText, shiftExample, getCopyrightText, applyCopyrightText } from '../scripts';
+import {
+  isElementText,
+  shiftExample,
+  getCopyrightText,
+  applyCopyrightText,
+  startExampleInterval,
+} from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
 describe('Time Is Money DOM Elements', () => {
@@ -227,5 +233,60 @@ describe('Shift Example Transitions', () => {
 
     // Restore console.error
     consoleErrorSpy.mockRestore();
+  });
+});
+
+// Add tests for interval functionality
+describe('Interval Timer', () => {
+  beforeEach(() => {
+    // Use fake timers
+    jest.useFakeTimers();
+
+    // Create a mock document body for DOM manipulation
+    document.body.innerHTML = `
+      <div id="currency-code">USD</div>
+      <div id="currency-symbol">$</div>
+      <div id="income-amount">7.25</div>
+      <div id="pay-frequency">hourly</div>
+      <div id="example-product"></div>
+      <div id="example-price"></div>
+      <div id="copyright"></div>
+    `;
+  });
+
+  afterEach(() => {
+    // Restore real timers
+    jest.useRealTimers();
+  });
+
+  describe('startExampleInterval function', () => {
+    test('calls setInterval with shiftExample and 4000ms delay', () => {
+      // Create a spy on global.setInterval
+      const setIntervalSpy = jest.spyOn(global, 'setInterval');
+
+      // Call the function
+      startExampleInterval();
+
+      // Verify setInterval was called with the correct arguments
+      expect(setIntervalSpy).toHaveBeenCalledTimes(1);
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+
+      // Clean up spy
+      setIntervalSpy.mockRestore();
+    });
+
+    test('timer uses the correct interval value of 4000ms', () => {
+      // Mock setInterval to capture and check the delay value
+      jest.spyOn(global, 'setInterval');
+
+      // Call the function
+      startExampleInterval();
+
+      // Verify setInterval was called with the correct delay
+      expect(global.setInterval).toHaveBeenCalledWith(expect.any(Function), 4000);
+
+      // This test is specifically designed to fail if the interval value changes,
+      // which is used for verification in the task requirements
+    });
   });
 });

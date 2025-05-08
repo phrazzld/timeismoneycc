@@ -98,7 +98,7 @@
   - **Verification:**
     1. Open `index.html` in a browser; verify the example text continues to cycle every 4 seconds.
   - **Depends‑on:** [T001]
-- [ ] **T009 · Test · P2: add jest timer mock tests for `startExampleInterval`**
+- [x] **T009 · Test · P2: add jest timer mock tests for `startExampleInterval`**
   - **Context:** REMEDIATION_PLAN.md > 5. Issue: `setInterval` invocation not tested
   - **Action:**
     1. In `tests/scripts.test.ts`, use `jest.useFakeTimers()` and `jest.spyOn(global, 'setInterval')`.
