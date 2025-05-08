@@ -4,7 +4,7 @@ setInterval(shiftExample, 4000);
  * Updates the example display to show different currency and income scenarios.
  * Cycles through different examples of prices converted to work hours.
  */
-function shiftExample(): void {
+export function shiftExample(): void {
   const currencyCode: HTMLElement | null = document.getElementById('currency-code');
   const currencySymbol: HTMLElement | null = document.getElementById('currency-symbol');
   const incomeAmount: HTMLElement | null = document.getElementById('income-amount');
@@ -83,7 +83,7 @@ function shiftExample(): void {
  * @param val - The expected text content
  * @returns True if the element exists and its text content matches the expected value
  */
-function isElementText(element: HTMLElement | null, val: string): boolean {
+export function isElementText(element: HTMLElement | null, val: string): boolean {
   return element !== null && element.textContent === val;
 }
 

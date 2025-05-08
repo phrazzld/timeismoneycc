@@ -1,143 +1,121 @@
-# TODO: Configure Strict TypeScript Build & Remove Legacy JavaScript
+# Todo
 
-This document outlines the detailed task breakdown for implementing the "Configure Strict TypeScript Build & Remove All Legacy JavaScript" enhancement described in `PLAN.md`. Tasks are structured with clear dependencies and verification steps.
+## Code Sharing & Test Integrity
 
-## Core Scripts TypeScript Migration
-
-- [x] **T001 · Feature · P0: Configure strict TypeScript in `tsconfig.json`**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 2
+- [x] **T001 · Refactor · P0: export `isElementText` and `shiftExample` functions from `scripts.ts`**
+  - **Context:** REMEDIATION_PLAN.md > 1. Issue: Test suite duplicates source code
   - **Action:**
-    1. Modify `tsconfig.json` to set `"strict": true`.
-    2. Ensure all specified strictness-related compiler options are enabled.
-    3. Verify `"target"`, `"module"`, `"moduleResolution"`, `"outDir": "dist"`, and appropriate directory configuration.
+    1. Add `export` keyword to the `isElementText` function declaration in `scripts.ts`.
+    2. Add `export` keyword to the `shiftExample` function declaration in `scripts.ts`.
   - **Done‑when:**
-    1. `tsconfig.json` is updated with all required strictness options.
-    2. `tsc --noEmit` (or `npm run typecheck`) completes without configuration errors.
+    1. `isElementText` and `shiftExample` functions are exported from `scripts.ts`.
+    2. Project compiles successfully (`npx tsc --noEmit` or equivalent build command passes).
+  - **Depends‑on:** none
+- [ ] **T002 · Test · P0: refactor tests to import and use functions from `scripts.ts`**
+  - **Context:** REMEDIATION_PLAN.md > 1. Issue: Test suite duplicates source code
+  - **Action:**
+    1. Remove local definitions of `isElementText` and `shiftExample` from `tests/scripts.test.ts`.
+    2. Add import statements in `tests/scripts.test.ts` for `isElementText` and `shiftExample` from `../scripts`.
+    3. Ensure all tests utilize the imported functions.
+  - **Done‑when:**
+    1. Duplicated code for `isElementText` and `shiftExample` is removed from `tests/scripts.test.ts`.
+    2. All tests in `tests/scripts.test.ts` pass using imported functions.
+    3. Test coverage report (if configured) shows `scripts.ts` functions are covered by these tests.
+  - **Verification:**
+    1. Run `npm test`; all tests pass.
+    2. Introduce a deliberate, small bug into `isElementText` in `scripts.ts` (e.g., change a condition), re-run tests; confirm relevant test(s) fail. Revert the bug.
+  - **Depends‑on:** [T001]
+
+## TypeScript Configuration
+
+- [ ] **T003 · Chore · P1: add missing strictness flags to `tsconfig.json`**
+  - **Context:** REMEDIATION_PLAN.md > 2. Issue: Missing strictness flags
+  - **Action:**
+    1. Add `"noUnusedLocals": true`, `"noUnusedParameters": true`, `"noImplicitReturns": true` to `compilerOptions` in `tsconfig.json`.
+    2. Add `"noFallthroughCasesInSwitch": true`, `"forceConsistentCasingInFileNames": true` to `compilerOptions` in `tsconfig.json`.
+    3. Resolve any TypeScript errors or warnings that arise from these new flags.
+  - **Done‑when:**
+    1. All specified strictness flags are present and set to `true` in `tsconfig.json`.
+    2. `npx tsc --noEmit` (or equivalent build command) passes without errors.
+  - **Depends‑on:** none
+- [ ] **T004 · Chore · P2: update ES target version to `ES2020` in `tsconfig.json`**
+  - **Context:** REMEDIATION_PLAN.md > 4. Issue: ES target version older than recommended
+  - **Action:**
+    1. Change the `compilerOptions.target` value in `tsconfig.json` from `es2018` to `ES2020`.
+  - **Done‑when:**
+    1. `compilerOptions.target` in `tsconfig.json` is set to `ES2020`.
+    2. Project builds successfully (`npx tsc --noEmit` and any build scripts pass).
+    3. Application functions correctly in defined target environments (see Clarifications).
+  - **Verification:**
+    1. Run `npx tsc --noEmit`.
+    2. Perform basic smoke testing of the application in primary target browsers.
   - **Depends‑on:** none
 
-- [x] **T002 · Refactor · P0: Refactor `scripts.ts` for full type safety and strictness compliance**
+## Copyright Logic & Testability
 
-  - **Context:** PLAN.md > Detailed Build Steps > 3; PLAN.md > Error & Edge‑Case Strategy
+- [ ] **T005 · Refactor · P1: create and export `getCopyrightText` pure function in `scripts.ts`**
+  - **Context:** REMEDIATION_PLAN.md > 3. Issue: Copyright test doesn't verify actual script logic
   - **Action:**
-    1. Add explicit types for all variables, function parameters, and return values.
-    2. Replace any `any` types with specific types or `unknown`.
-    3. Implement robust `null` checks for all DOM element retrievals.
+    1. Define and export a new pure function `getCopyrightText(year: number): string` in `scripts.ts` that returns the copyright string.
   - **Done‑when:**
-    1. `scripts.ts` fully complies with the strict TypeScript settings.
-    2. `npm run typecheck` passes without type errors.
-    3. No `any` types remain in `scripts.ts` unless explicitly justified.
-  - **Depends‑on:** [T001]
-
-- [x] **T003 · Refactor · P1: Resolve all ESLint errors and warnings in `scripts.ts`**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 4
+    1. `getCopyrightText` function is implemented and exported from `scripts.ts`.
+    2. Function correctly generates the copyright string for a given year.
+  - **Depends‑on:** none
+- [ ] **T006 · Refactor · P1: create and export `applyCopyrightText` function in `scripts.ts`**
+  - **Context:** REMEDIATION_PLAN.md > 3. Issue: Copyright test doesn't verify actual script logic
   - **Action:**
-    1. Run `npm run lint` (and `npm run lint:fix` if available) on `scripts.ts`.
-    2. Manually address all remaining ESLint issues.
+    1. Define and export a new function `applyCopyrightText(): void` in `scripts.ts`.
+    2. This function should use `getCopyrightText(new Date().getFullYear())` to get the current copyright string and set the `innerHTML` of the copyright DOM element.
+    3. Replace the existing inline copyright update logic in `scripts.ts` with a call to `applyCopyrightText()`.
   - **Done‑when:**
-    1. `npm run lint` passes without any errors or warnings.
-  - **Depends‑on:** [T002]
-
-- [x] **T004 · Chore · P1: Update `package.json` scripts for TypeScript workflow**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 5
-  - **Action:**
-    1. Review and update scripts in `package.json` (e.g., `build`, `lint`, `typecheck`, `test`).
-    2. Ensure scripts correctly reference `scripts.ts` and `dist/scripts.js`.
-    3. Remove any references to the legacy `scripts.js` or `tests/scripts.test.js`.
-  - **Done‑when:**
-    1. `package.json` scripts are updated and functional for the TypeScript workflow.
-  - **Depends‑on:** [T001]
-
-- [x] **T005 · Test · P0: Adapt and enhance `tests/scripts.test.ts` for strict TypeScript and edge cases**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 6; PLAN.md > Testing Strategy
-  - **Action:**
-    1. Refactor `tests/scripts.test.ts` to comply with strict TypeScript rules.
-    2. Add/enhance tests covering edge cases (missing DOM elements, animation states, helper function logic).
-    3. Utilize Jest's timer/date mocks for deterministic testing.
-  - **Done‑when:**
-    1. `tests/scripts.test.ts` is fully compliant with strict TypeScript.
-    2. Test suite provides meaningful coverage for core logic and edge cases.
-  - **Depends‑on:** [T002]
-
-- [x] **T006 · Test · P1: Ensure all tests pass in `tests/scripts.test.ts`**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 6
-  - **Action:**
-    1. Run `npm test`.
-    2. Debug and fix any test failures.
-  - **Done‑when:**
-    1. `npm test` completes successfully with 0 failures.
-    2. Test coverage meets or exceeds the existing project threshold.
+    1. `applyCopyrightText` function is implemented, exported, and called on script load in `scripts.ts`.
+    2. The copyright text in `index.html` is correctly updated by this function.
+  - **Verification:**
+    1. Open `index.html` in a browser; verify the copyright text and year are correctly displayed in the footer.
   - **Depends‑on:** [T005]
-
-- [x] **T007 · Chore · P2: Remove legacy JavaScript test file `tests/scripts.test.js`**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 7
+- [ ] **T007 · Test · P1: update copyright tests to use new exported functions from `scripts.ts`**
+  - **Context:** REMEDIATION_PLAN.md > 3. Issue: Copyright test doesn't verify actual script logic
   - **Action:**
-    1. Delete the `tests/scripts.test.js` file.
+    1. Remove any duplicated copyright generation/application logic from `tests/scripts.test.ts`.
+    2. Import `getCopyrightText` and `applyCopyrightText` from `../scripts`.
+    3. Add tests for `getCopyrightText` (verifying string output for various years) and `applyCopyrightText` (mocking `Date` and the DOM element to verify it's updated correctly).
   - **Done‑when:**
-    1. `tests/scripts.test.js` is deleted.
-    2. `npm test` still runs correctly using only `tests/scripts.test.ts`.
-  - **Depends‑on:** [T006]
+    1. Copyright tests in `tests/scripts.test.ts` use the imported functions.
+    2. Tests for `getCopyrightText` and `applyCopyrightText` pass, including deterministic year testing using `Date` mock.
+  - **Depends‑on:** [T005, T006]
 
-- [x] **T008 · Chore · P1: Build `scripts.ts` to `dist/scripts.js`**
+## Interval Timer Testability
 
-  - **Context:** PLAN.md > Detailed Build Steps > 8
+- [ ] **T008 · Refactor · P2: create and export `startExampleInterval` function in `scripts.ts`**
+  - **Context:** REMEDIATION_PLAN.md > 5. Issue: `setInterval` invocation not tested
   - **Action:**
-    1. Run `npm run build`.
+    1. Define and export a new function `startExampleInterval(): void` in `scripts.ts`.
+    2. Move the `setInterval(shiftExample, 4000)` call into this new function.
+    3. Call `startExampleInterval()` on script load in `scripts.ts` to initiate the timer.
   - **Done‑when:**
-    1. The build process completes successfully.
-    2. `dist/scripts.js` is generated from `scripts.ts`.
-  - **Depends‑on:** [T003, T004]
-
-- [x] **T009 · Refactor · P1: Update `index.html` to reference compiled `dist/scripts.js`**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 9
-  - **Action:**
-    1. Modify the `<script>` tag in `index.html` to reference `dist/scripts.js`.
-  - **Done‑when:**
-    1. The `<script>` tag in `index.html` correctly references `dist/scripts.js`.
+    1. `startExampleInterval` function is implemented, exported, and called on script load in `scripts.ts`.
+    2. The example cycling behavior in `index.html` remains unchanged.
   - **Verification:**
-    1. Open `index.html` in a browser.
-    2. Verify `dist/scripts.js` is loaded (no 404 errors).
-    3. Check the browser console for any script loading errors.
-  - **Depends‑on:** [T008]
-
-- [x] **T010 · Chore · P2: Remove legacy `scripts.js` source file from project root**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 10
+    1. Open `index.html` in a browser; verify the example text continues to cycle every 4 seconds.
+  - **Depends‑on:** [T001]
+- [ ] **T009 · Test · P2: add jest timer mock tests for `startExampleInterval`**
+  - **Context:** REMEDIATION_PLAN.md > 5. Issue: `setInterval` invocation not tested
   - **Action:**
-    1. Delete the `scripts.js` file from the project root.
+    1. In `tests/scripts.test.ts`, use `jest.useFakeTimers()` and `jest.spyOn(global, 'setInterval')`.
+    2. Test that `startExampleInterval` calls `global.setInterval` with `shiftExample` (the imported function) and `4000`.
+    3. Test that `shiftExample` is called after advancing timers by 4000ms using `jest.advanceTimersByTime(4000)`.
   - **Done‑when:**
-    1. The legacy `scripts.js` file is deleted.
-    2. The application still builds and runs correctly.
-  - **Depends‑on:** [T009]
-
-- [x] **T011 · Test · P0: Perform manual end-to-end verification of UI functionality**
-
-  - **Context:** PLAN.md > Detailed Build Steps > 11; PLAN.md > Risk Matrix
-  - **Action:**
-    1. Load `index.html` in supported web browsers.
-    2. Verify the currency/income example animation cycles correctly.
-    3. Verify the copyright year is displayed correctly.
-    4. Check the browser's developer console for any errors or warnings.
-  - **Done‑when:**
-    1. All UI functionalities are working correctly with `dist/scripts.js`.
-    2. No functional regressions or new console errors are observed.
+    1. New tests for `startExampleInterval` using Jest timer mocks are added to `tests/scripts.test.ts`.
+    2. All new timer tests pass.
   - **Verification:**
-    1. Observe the example animation for at least 3 full cycles.
-    2. Confirm the copyright year matches the current year.
-    3. Test error handling for edge cases if possible.
-  - **Depends‑on:** [T009]
+    1. Temporarily change the interval duration in `startExampleInterval` in `scripts.ts` (e.g., to 5000ms). Re-run tests; confirm the test asserting the 4000ms delay fails. Revert the change.
+  - **Depends‑on:** [T001, T008]
 
-- [x] **T012 · Chore · P2: Update `README.md` to reflect TypeScript-only build and usage**
-  - **Context:** PLAN.md > Detailed Build Steps > 12
-  - **Action:**
-    1. Review `README.md` for any mentions of the legacy `scripts.js`.
-    2. Update documentation to reflect the TypeScript-first workflow.
-  - **Done‑when:**
-    1. `README.md` accurately describes the current TypeScript-based project structure and workflow.
-  - **Depends‑on:** [T010, T011]
+### Clarifications & Assumptions
+
+- [ ] **Issue:** Define specific target browser/Node.js environments for ES2020 compatibility testing.
+  - **Context:** REMEDIATION_PLAN.md > 4. Issue: ES target version older than recommended (Verification Step)
+  - **Blocking?:** no
+- [ ] **Issue:** Confirm if top-level script execution calls (e.g., `applyCopyrightText()`, `startExampleInterval()`) should be wrapped in a main/init function for better testability or if current direct invocation is acceptable.
+  - **Context:** General script structure arising from refactoring for T006, T008.
+  - **Blocking?:** no
