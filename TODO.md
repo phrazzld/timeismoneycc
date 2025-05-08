@@ -53,7 +53,7 @@
 
 ## Copyright Logic & Testability
 
-- [ ] **T005 · Refactor · P1: create and export `getCopyrightText` pure function in `scripts.ts`**
+- [x] **T005 · Refactor · P1: create and export `getCopyrightText` pure function in `scripts.ts`**
   - **Context:** REMEDIATION_PLAN.md > 3. Issue: Copyright test doesn't verify actual script logic
   - **Action:**
     1. Define and export a new pure function `getCopyrightText(year: number): string` in `scripts.ts` that returns the copyright string.

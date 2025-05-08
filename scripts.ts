@@ -87,6 +87,17 @@ export function isElementText(element: HTMLElement | null, val: string): boolean
   return element !== null && element.textContent === val;
 }
 
+/**
+ * Generates a copyright text string for the given year
+ * @param year - The year to include in the copyright text
+ * @returns A formatted copyright string with the year and link to Phaedrus
+ */
+export function getCopyrightText(year: number): string {
+  return (
+    'Copyright \u00A9 ' + year + ' <a href="https://www.phaedrus.io" target="_blank">Phaedrus</a>'
+  );
+}
+
 // Set copyright year in footer
 const copyrightElement = document.getElementById('copyright');
 if (copyrightElement) {
