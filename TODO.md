@@ -61,7 +61,7 @@
     1. `getCopyrightText` function is implemented and exported from `scripts.ts`.
     2. Function correctly generates the copyright string for a given year.
   - **Depends‑on:** none
-- [ ] **T006 · Refactor · P1: create and export `applyCopyrightText` function in `scripts.ts`**
+- [x] **T006 · Refactor · P1: create and export `applyCopyrightText` function in `scripts.ts`**
   - **Context:** REMEDIATION_PLAN.md > 3. Issue: Copyright test doesn't verify actual script logic
   - **Action:**
     1. Define and export a new function `applyCopyrightText(): void` in `scripts.ts`.

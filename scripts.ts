@@ -98,11 +98,16 @@ export function getCopyrightText(year: number): string {
   );
 }
 
-// Set copyright year in footer
-const copyrightElement = document.getElementById('copyright');
-if (copyrightElement) {
-  copyrightElement.innerHTML =
-    'Copyright \u00A9 ' +
-    new Date().getFullYear() +
-    ' <a href="https://www.phaedrus.io" target="_blank">Phaedrus</a>';
+/**
+ * Updates the copyright element in the DOM with the current year
+ * Finds the copyright element and sets its innerHTML using the getCopyrightText function
+ */
+export function applyCopyrightText(): void {
+  const copyrightElement = document.getElementById('copyright');
+  if (copyrightElement) {
+    copyrightElement.innerHTML = getCopyrightText(new Date().getFullYear());
+  }
 }
+
+// Set copyright year in footer
+applyCopyrightText();
