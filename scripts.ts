@@ -1,4 +1,13 @@
-setInterval(shiftExample, 4000);
+/**
+ * Starts the interval timer that cycles through example currency displays
+ * Uses setInterval to call shiftExample every 4000ms
+ */
+export function startExampleInterval(): void {
+  setInterval(shiftExample, 4000);
+}
+
+// Start the example cycling interval
+startExampleInterval();
 
 /**
  * Updates the example display to show different currency and income scenarios.

@@ -86,7 +86,7 @@
 
 ## Interval Timer Testability
 
-- [ ] **T008 · Refactor · P2: create and export `startExampleInterval` function in `scripts.ts`**
+- [x] **T008 · Refactor · P2: create and export `startExampleInterval` function in `scripts.ts`**
   - **Context:** REMEDIATION_PLAN.md > 5. Issue: `setInterval` invocation not tested
   - **Action:**
     1. Define and export a new function `startExampleInterval(): void` in `scripts.ts`.
