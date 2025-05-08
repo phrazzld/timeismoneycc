@@ -133,7 +133,7 @@ This document outlines the detailed task breakdown for implementing the "Configu
     3. Test error handling for edge cases if possible.
   - **Depends‑on:** [T009]
 
-- [ ] **T012 · Chore · P2: Update `README.md` to reflect TypeScript-only build and usage**
+- [x] **T012 · Chore · P2: Update `README.md` to reflect TypeScript-only build and usage**
   - **Context:** PLAN.md > Detailed Build Steps > 12
   - **Action:**
     1. Review `README.md` for any mentions of the legacy `scripts.js`.
