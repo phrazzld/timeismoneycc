@@ -28,7 +28,7 @@
 
 ## TypeScript Configuration
 
-- [ ] **T003 · Chore · P1: add missing strictness flags to `tsconfig.json`**
+- [x] **T003 · Chore · P1: add missing strictness flags to `tsconfig.json`**
   - **Context:** REMEDIATION_PLAN.md > 2. Issue: Missing strictness flags
   - **Action:**
     1. Add `"noUnusedLocals": true`, `"noUnusedParameters": true`, `"noImplicitReturns": true` to `compilerOptions` in `tsconfig.json`.
