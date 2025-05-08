@@ -11,7 +11,7 @@
     1. `isElementText` and `shiftExample` functions are exported from `scripts.ts`.
     2. Project compiles successfully (`npx tsc --noEmit` or equivalent build command passes).
   - **Depends‑on:** none
-- [ ] **T002 · Test · P0: refactor tests to import and use functions from `scripts.ts`**
+- [x] **T002 · Test · P0: refactor tests to import and use functions from `scripts.ts`**
   - **Context:** REMEDIATION_PLAN.md > 1. Issue: Test suite duplicates source code
   - **Action:**
     1. Remove local definitions of `isElementText` and `shiftExample` from `tests/scripts.test.ts`.
