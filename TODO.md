@@ -38,7 +38,7 @@
     1. All specified strictness flags are present and set to `true` in `tsconfig.json`.
     2. `npx tsc --noEmit` (or equivalent build command) passes without errors.
   - **Depends‑on:** none
-- [ ] **T004 · Chore · P2: update ES target version to `ES2020` in `tsconfig.json`**
+- [x] **T004 · Chore · P2: update ES target version to `ES2020` in `tsconfig.json`**
   - **Context:** REMEDIATION_PLAN.md > 4. Issue: ES target version older than recommended
   - **Action:**
     1. Change the `compilerOptions.target` value in `tsconfig.json` from `es2018` to `ES2020`.
