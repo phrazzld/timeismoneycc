@@ -3,7 +3,7 @@
  */
 
 // Import functions from scripts.ts for testing
-import { isElementText, shiftExample } from '../scripts';
+import { isElementText, shiftExample, getCopyrightText, applyCopyrightText } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
 describe('Time Is Money DOM Elements', () => {
@@ -48,8 +48,17 @@ describe('Time Is Money DOM Elements', () => {
     });
   });
 
-  describe('copyright functionality', () => {
-    test('copyright should contain current year when updated', () => {
+  describe('getCopyrightText function', () => {
+    test('returns correct copyright text for a given year', () => {
+      expect(getCopyrightText(2023)).toContain('Copyright © 2023');
+      expect(getCopyrightText(2023)).toContain('<a href="https://www.phaedrus.io"');
+      expect(getCopyrightText(2024)).toContain('2024');
+      expect(getCopyrightText(1999)).toContain('1999');
+    });
+  });
+
+  describe('applyCopyrightText function', () => {
+    test('applies copyright text with current year to the DOM', () => {
       // Mock the current year
       const mockDate = new Date(2023, 0, 1);
       const realDate = Date;
@@ -60,18 +69,27 @@ describe('Time Is Money DOM Elements', () => {
       global.Date.parse = realDate.parse;
       global.Date.now = realDate.now;
 
+      // Get the copyright element before calling the function
       const copyright = document.getElementById('copyright') as HTMLElement;
+      expect(copyright.innerHTML).toBe('');
 
-      // Simulate what the script would do
-      copyright.innerHTML =
-        'Copyright \u00A9 ' +
-        new Date().getFullYear() +
-        ' <a href="https://www.phaedrus.io" target="_blank">Phaedrus</a>';
+      // Call the function being tested
+      applyCopyrightText();
 
-      expect(copyright.innerHTML).toContain('2023');
+      // Verify it contains the expected content
+      expect(copyright.innerHTML).toContain('Copyright © 2023');
+      expect(copyright.innerHTML).toContain('Phaedrus');
 
       // Restore the original Date object
       global.Date = realDate;
+    });
+
+    test('does nothing when copyright element does not exist', () => {
+      // Remove the copyright element
+      document.getElementById('copyright')?.remove();
+
+      // This should not throw an error
+      expect(() => applyCopyrightText()).not.toThrow();
     });
   });
 });

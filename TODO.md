@@ -73,7 +73,7 @@
   - **Verification:**
     1. Open `index.html` in a browser; verify the copyright text and year are correctly displayed in the footer.
   - **Depends‑on:** [T005]
-- [ ] **T007 · Test · P1: update copyright tests to use new exported functions from `scripts.ts`**
+- [x] **T007 · Test · P1: update copyright tests to use new exported functions from `scripts.ts`**
   - **Context:** REMEDIATION_PLAN.md > 3. Issue: Copyright test doesn't verify actual script logic
   - **Action:**
     1. Remove any duplicated copyright generation/application logic from `tests/scripts.test.ts`.
