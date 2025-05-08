@@ -7,7 +7,7 @@ export function startExampleInterval(): void {
 }
 
 // Start the example cycling interval
-startExampleInterval();
+// Moved to initializeApplication() function
 
 /**
  * Updates the example display to show different currency and income scenarios.
@@ -119,4 +119,13 @@ export function applyCopyrightText(): void {
 }
 
 // Set copyright year in footer
-applyCopyrightText();
+// Moved to initializeApplication() function
+
+/**
+ * Initializes the application by starting the example interval and setting the copyright text
+ * Call this function to start the application functionality
+ */
+export function initializeApplication(): void {
+  startExampleInterval();
+  applyCopyrightText();
+}

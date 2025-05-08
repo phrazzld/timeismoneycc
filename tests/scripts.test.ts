@@ -9,6 +9,7 @@ import {
   getCopyrightText,
   applyCopyrightText,
   startExampleInterval,
+  initializeApplication,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -287,6 +288,39 @@ describe('Interval Timer', () => {
 
       // This test is specifically designed to fail if the interval value changes,
       // which is used for verification in the task requirements
+    });
+  });
+
+  describe('initializeApplication function', () => {
+    test('calls both startExampleInterval and applyCopyrightText', () => {
+      // Mock the current year for consistent test results
+      const mockDate = new Date(2023, 0, 1);
+      const realDate = Date;
+      global.Date = jest.fn(() => mockDate) as unknown as typeof Date;
+      global.Date.UTC = realDate.UTC;
+      global.Date.parse = realDate.parse;
+      global.Date.now = realDate.now;
+
+      // Create spies for the functions that will be called
+      const setIntervalSpy = jest.spyOn(global, 'setInterval');
+
+      // Before initialization, copyright should be empty
+      const copyright = document.getElementById('copyright') as HTMLElement;
+      expect(copyright.innerHTML).toBe('');
+
+      // Call the initialization function
+      initializeApplication();
+
+      // Verify setInterval was called with correct parameters (from startExampleInterval)
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+
+      // Verify copyright was set (from applyCopyrightText)
+      expect(copyright.innerHTML).toContain('Copyright © 2023');
+      expect(copyright.innerHTML).toContain('Phaedrus');
+
+      // Clean up spy and restore Date
+      setIntervalSpy.mockRestore();
+      global.Date = realDate;
     });
   });
 });
