@@ -6,19 +6,12 @@ This backlog outlines planned work for the "timeismoneycc" project. It balances 
 
 ### Core Platform & Developer Experience
 
-- **[Enhancement]**: **Configure Strict TypeScript Build & Remove All Legacy JavaScript**
-
-  - **Complexity**: Medium
-  - **Rationale**: Eliminates technical debt (`scripts.js`), enforces type safety across the entire frontend, improves code maintainability, and aligns with core Development Philosophy mandates (Language Strictness, Simplicity).
-  - **Expected Outcome**: All frontend code is TypeScript. `scripts.js` is removed. `tsconfig.json` is configured with `"strict": true` and other recommended strictness settings. Build process is clean, reliable, and type-safe.
-  - **Dependencies**: None
-
 - **[Enhancement]**: **Implement Pre-commit Hooks for Automated Formatting and Linting**
 
   - **Complexity**: Simple
   - **Rationale**: Enforces Coding Standards (Formatting with Prettier, Linting with ESLint) automatically before code enters the repository. Improves code consistency, catches errors early, and streamlines developer workflow, aligning with "Automation Everywhere."
   - **Expected Outcome**: Pre-commit hooks (e.g., using Husky and lint-staged) automatically run Prettier and ESLint on staged files. Commits failing these checks are blocked.
-  - **Dependencies**: Configure Strict TypeScript Build (for ESLint to work effectively with TS)
+  - **Dependencies**: None
 
 - **[Enhancement]**: **Standardize Branch Naming Convention & Update Documentation**
   - **Complexity**: Simple
@@ -33,13 +26,13 @@ This backlog outlines planned work for the "timeismoneycc" project. It balances 
   - **Complexity**: Medium
   - **Rationale**: Critical for "Design for Testability" and "Separation of Concerns." Decouples business logic (e.g., calculator functions within `scripts.ts`) from UI rendering, enabling robust unit testing and easier maintenance.
   - **Expected Outcome**: Core business logic extracted into pure, testable TypeScript functions or modules, independent of DOM elements. These functions can be unit-tested without a browser environment.
-  - **Dependencies**: Configure Strict TypeScript Build
+  - **Dependencies**: None
 
-- **[Refactor]**: **Refactor `shiftExample` to be Data-Driven**
+- **[Completed]**: **Refactor `shiftExample` to be Data-Driven**
   - **Complexity**: Medium
   - **Rationale**: Reduces verbosity and improves maintainability of the `shiftExample` function by adopting a data-driven structure over extensive conditionals. Contributes to code quality, Simplicity, and Code Size Optimization.
   - **Expected Outcome**: `shiftExample` logic is refactored to use a configuration map or array of state objects, leading to reduced lines of code, simpler logic, and easier extensibility.
-  - **Dependencies**: Isolate Core Application Logic from DOM Manipulation
+  - **Dependencies**: Isolate Core Application Logic from DOM Manipulation (Note: This dependency was partially addressed as we focused on restructuring the function but did not fully decouple from DOM manipulation)
 
 ### Product Definition & User Value
 
