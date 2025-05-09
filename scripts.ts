@@ -129,3 +129,8 @@ export function initializeApplication(): void {
   startExampleInterval();
   applyCopyrightText();
 }
+
+// Expose initializeApplication to the global scope for use in index.html
+if (typeof window !== 'undefined') {
+  (window as any).initializeApplication = initializeApplication;
+}

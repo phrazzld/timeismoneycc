@@ -11,6 +11,9 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'node-addons'],
+  },
   // Setting initial thresholds to match current coverage (0%)
   // These thresholds will be incrementally increased as part of other backlog items
   // that focus on improving test coverage and refactoring core logic
