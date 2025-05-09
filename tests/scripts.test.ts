@@ -10,6 +10,9 @@ import {
   applyCopyrightText,
   startExampleInterval,
   initializeApplication,
+  findCurrentStateIndex,
+  applyState,
+  currencyStates,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -170,9 +173,11 @@ describe('Shift Example Transitions', () => {
     // Set up initial state (GBP, £)
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
 
     currencyCode.textContent = 'GBP';
     currencySymbol.textContent = '£';
+    payFrequency.textContent = 'yearly'; // Need to set the pay frequency to match our state definition
 
     // Call the function
     shiftExample();
@@ -186,9 +191,11 @@ describe('Shift Example Transitions', () => {
     // Set up initial state (EUR, €)
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
 
     currencyCode.textContent = 'EUR';
     currencySymbol.textContent = '€';
+    payFrequency.textContent = 'hourly'; // Match our state definition
 
     // Call the function
     shiftExample();
@@ -202,9 +209,11 @@ describe('Shift Example Transitions', () => {
     // Set up a state not matching any condition to trigger the else clause
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
 
     currencyCode.textContent = 'MXN';
     currencySymbol.textContent = '$';
+    payFrequency.textContent = 'hourly';
 
     // Call the function
     shiftExample();
@@ -234,6 +243,103 @@ describe('Shift Example Transitions', () => {
 
     // Restore console.error
     consoleErrorSpy.mockRestore();
+  });
+});
+
+// Tests for the new data-driven implementation
+describe('Data-Driven ShiftExample Implementation', () => {
+  beforeEach(() => {
+    // Create a mock document object
+    document.body.innerHTML = `
+      <div id="currency-code">USD</div>
+      <div id="currency-symbol">$</div>
+      <div id="income-amount">7.25</div>
+      <div id="pay-frequency">hourly</div>
+      <div id="example-product"></div>
+      <div id="example-price"></div>
+      <div id="copyright"></div>
+    `;
+  });
+
+  test('currencyStates array contains all expected states', () => {
+    // Verify that our data-driven approach has all required states
+    expect(currencyStates).toBeDefined();
+    expect(currencyStates.length).toBe(5);
+
+    // Check for specific state properties
+    const usdHourlyState = currencyStates[0];
+    expect(usdHourlyState.currencyCode).toBe('USD');
+    expect(usdHourlyState.payFrequency).toBe('hourly');
+
+    // Check specific state transitions
+    expect(currencyStates[1].currencyCode).toBe('USD');
+    expect(currencyStates[1].payFrequency).toBe('yearly');
+    expect(currencyStates[2].currencyCode).toBe('GBP');
+    expect(currencyStates[3].currencyCode).toBe('EUR');
+    expect(currencyStates[4].currencyCode).toBe('MXN');
+  });
+
+  test('findCurrentStateIndex returns correct index for matching state', () => {
+    // Get DOM elements
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
+
+    // Test default index (0 for USD hourly)
+    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(0);
+
+    // Test with changed DOM
+    currencyCode.textContent = 'GBP';
+    currencySymbol.textContent = '£';
+    payFrequency.textContent = 'yearly';
+    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(2);
+
+    // Test non-matching state
+    currencyCode.textContent = 'JPY'; // Not in our states
+    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(-1);
+  });
+
+  test('applyState correctly updates DOM with state data', () => {
+    // Get DOM elements
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const incomeAmount = document.getElementById('income-amount') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
+    const exampleProduct = document.getElementById('example-product') as HTMLElement;
+    const examplePrice = document.getElementById('example-price') as HTMLElement;
+
+    // Apply a specific state (EUR)
+    const eurState = currencyStates[3];
+    applyState(
+      eurState,
+      currencyCode,
+      currencySymbol,
+      incomeAmount,
+      payFrequency,
+      exampleProduct,
+      examplePrice,
+    );
+
+    // Verify DOM is updated correctly
+    expect(currencyCode.textContent).toBe('EUR');
+    expect(currencySymbol.textContent).toBe('€');
+    expect(incomeAmount.textContent).toBe('9,61');
+    expect(payFrequency.textContent).toBe('hourly');
+    expect(exampleProduct.innerHTML).toContain('Kindle Paperwhite');
+    expect(examplePrice.innerHTML).toContain('99,99');
+    expect(examplePrice.innerHTML).toContain('EUR');
+  });
+
+  test('full cycle transitions through all states in order', () => {
+    // Get DOM elements
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+
+    // Complete full cycle and check that we end up back at the start
+    for (let i = 0; i < currencyStates.length; i++) {
+      const expectedNextCode = currencyStates[(i + 1) % currencyStates.length].currencyCode;
+      shiftExample();
+      expect(currencyCode.textContent).toBe(expectedNextCode);
+    }
   });
 });
 
