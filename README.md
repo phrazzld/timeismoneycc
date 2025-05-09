@@ -16,6 +16,7 @@ A Chrome extension for converting prices to time worked (and the reverse).
 
 - Node.js (v14+)
 - npm (v6+)
+- TypeScript (Project uses strict TypeScript configuration)
 
 ### Installation
 
@@ -40,10 +41,13 @@ npm run pre-commit:install-hooks
 
 ### Development Commands
 
+- Build project: `npm run build` (Compiles TypeScript to JavaScript in the `dist` directory)
+- Watch for changes: `npm run watch` (Automatically recompiles TypeScript on changes)
 - Run tests: `npm test`
 - Run linting: `npm run lint`
 - Format code: `npm run format`
 - Run TypeScript check: `npm run typecheck`
+- Clean build output: `npm run clean`
 
 ### Git Hooks
 
@@ -82,12 +86,23 @@ The CI pipeline enforces the following quality gates:
 
 All quality gates must pass for a PR to be mergeable when branch protection rules are enabled.
 
+### Project Structure
+
+The project follows a TypeScript-first approach:
+
+- `scripts.ts`: Main TypeScript source file for the extension's functionality
+- `dist/scripts.js`: Compiled JavaScript output (generated from TypeScript)
+- `tests/scripts.test.ts`: TypeScript unit tests
+
 ### Running Checks Locally
 
 Run these commands locally before pushing to avoid CI failures:
 
 ```bash
-# Run all checks at once
+# First build the project
+npm run build
+
+# Then run all checks
 npm run lint:all
 npm run typecheck
 npm test -- --coverage
@@ -96,6 +111,7 @@ npm audit --audit-level=high
 
 ### Troubleshooting CI Failures
 
+- **Build failures**: Make sure TypeScript compiles successfully with `npm run build`.
 - **Lint failures**: Look for ESLint or Prettier errors in the logs. Fix with `npm run lint:fix:all`.
 - **TypeScript errors**: Check the error message for file and line information. Fix type issues accordingly.
 - **Test failures**: Run tests locally with `npm test` to debug. Check for broken assertions or coverage issues.

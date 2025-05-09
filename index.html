@@ -83,6 +83,13 @@
       </div>
     </footer>
 
-    <script src="scripts.js"></script>
+    <script src="dist/scripts.js"></script>
+    <script>
+      // Initialize the application when the DOM is fully loaded
+      document.addEventListener('DOMContentLoaded', function () {
+        // Assumes the global initializeApplication function is exported from scripts.js
+        window.initializeApplication();
+      });
+    </script>
   </body>
 </html>
