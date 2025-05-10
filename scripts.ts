@@ -121,10 +121,13 @@ export const currencyStates: CurrencyState[] = [
 
 /**
  * Calculate the next state index, cycling through available states
+ * A pure function that takes the current index and total states as parameters
+ * @param currentIndex - The current state index
+ * @param totalStates - The total number of states in the cycle
  * @returns The index of the next state
  */
-export function calculateNextStateIndex(): number {
-  return (currentDisplayStateIndex + 1) % currencyStates.length;
+export function calculateNextStateIndex(currentIndex: number, totalStates: number): number {
+  return (currentIndex + 1) % totalStates;
 }
 
 /**
@@ -153,8 +156,8 @@ export function shiftExample(): void {
     );
   }
 
-  // Calculate the next state index
-  const nextStateIndex = calculateNextStateIndex();
+  // Calculate the next state index using pure function
+  const nextStateIndex = calculateNextStateIndex(currentDisplayStateIndex, currencyStates.length);
 
   // Update our internal state tracker
   currentDisplayStateIndex = nextStateIndex;
@@ -175,8 +178,10 @@ export function shiftExample(): void {
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in the next major version.
+ * Use the internal state tracking (currentDisplayStateIndex) instead of reading state from DOM.
+ *
  * Finds the index of the current state based on DOM element values
- * @deprecated No longer needed since we use internal state tracking with currentDisplayStateIndex
  * @param currencyCode - Currency code element
  * @param currencySymbol - Currency symbol element
  * @param payFrequency - Pay frequency element
@@ -187,6 +192,11 @@ export function findCurrentStateIndex(
   currencySymbol: HTMLElement,
   payFrequency: HTMLElement,
 ): number {
+  console.warn(
+    'findCurrentStateIndex is deprecated and will be removed in the next major version. ' +
+      'Use the internal state tracking instead of reading state from DOM.',
+  );
+
   // Look for a matching state in the array
   return currencyStates.findIndex(
     (state) =>
@@ -283,12 +293,24 @@ export function getCopyrightText(year: number): string {
 
 /**
  * Updates the copyright element in the DOM with the current year
- * Finds the copyright element and sets its innerHTML using the getCopyrightText function
+ * Finds the copyright element and creates child nodes programmatically to avoid XSS risks
  */
 export function applyCopyrightText(): void {
   const copyrightElement = document.getElementById('copyright');
   if (copyrightElement) {
-    copyrightElement.innerHTML = getCopyrightText(new Date().getFullYear());
+    // Clear any existing content
+    copyrightElement.innerHTML = '';
+
+    // Add copyright symbol and year text
+    const year = new Date().getFullYear();
+    copyrightElement.appendChild(document.createTextNode('Copyright © ' + year + ' '));
+
+    // Create and append the link to Phaedrus
+    const link = document.createElement('a');
+    link.href = 'https://www.phaedrus.io';
+    link.target = '_blank';
+    link.textContent = 'Phaedrus';
+    copyrightElement.appendChild(link);
   }
 }
 

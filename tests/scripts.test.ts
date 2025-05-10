@@ -14,6 +14,7 @@ import {
   applyState,
   currencyStates,
   EXAMPLE_CYCLE_INTERVAL_MS,
+  calculateNextStateIndex,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -107,55 +108,40 @@ describe('Time Is Money DOM Elements', () => {
 
 // Pure logic unit tests that don't require jsdom
 describe('State Transition Logic', () => {
-  // We need to mock our own state index since we can't modify imports directly
-  let mockStateIndex = 0;
-
-  // Create a mock version of state index calculation to use our local variable
-  const mockNextStateIndex = (): number => {
-    return (mockStateIndex + 1) % currencyStates.length;
-  };
-
-  beforeEach(() => {
-    // Reset to a known state before each test
-    mockStateIndex = 0;
-  });
-
-  test('state index calculation returns correct next index', () => {
+  test('calculateNextStateIndex returns correct next index', () => {
     // Test from first state
-    mockStateIndex = 0;
-    expect(mockNextStateIndex()).toBe(1);
+    expect(calculateNextStateIndex(0, currencyStates.length)).toBe(1);
 
     // Test from middle state
-    mockStateIndex = 2;
-    expect(mockNextStateIndex()).toBe(3);
+    expect(calculateNextStateIndex(2, currencyStates.length)).toBe(3);
   });
 
-  test('state index calculation wraps around at the end of the array', () => {
+  test('calculateNextStateIndex wraps around at the end of the array', () => {
     // Set to last state
-    mockStateIndex = currencyStates.length - 1;
+    const lastIndex = currencyStates.length - 1;
     // Should wrap around to 0
-    expect(mockNextStateIndex()).toBe(0);
+    expect(calculateNextStateIndex(lastIndex, currencyStates.length)).toBe(0);
   });
 
   test('state cycling covers all states in sequence', () => {
     // Start from beginning
-    mockStateIndex = 0;
+    let currentIndex = 0;
 
     // Track the sequence of indices we get
     const sequence: number[] = [];
 
     // Cycle through one complete revolution
     for (let i = 0; i < currencyStates.length; i++) {
-      const nextIndex = mockNextStateIndex();
+      const nextIndex = calculateNextStateIndex(currentIndex, currencyStates.length);
       sequence.push(nextIndex);
-      mockStateIndex = nextIndex;
+      currentIndex = nextIndex;
     }
 
     // Check that we hit all indices in sequence
     expect(sequence).toEqual([1, 2, 3, 4, 0]);
 
     // And we're back at the start
-    expect(mockStateIndex).toBe(0);
+    expect(currentIndex).toBe(0);
   });
 });
 
