@@ -44,8 +44,18 @@ export const EXAMPLE_CYCLE_INTERVAL_MS = 4000;
 /**
  * Track the current display state index
  * Used for cycling through currency examples without reading the DOM
+ * This is deliberately not exported to prevent external state manipulation
  */
-export let currentDisplayStateIndex = 0;
+let currentDisplayStateIndex = 0;
+
+/**
+ * Resets the current display state index to 0
+ * This function is only for use in tests to ensure a clean state
+ * @internal
+ */
+export function _resetStateForTesting(): void {
+  currentDisplayStateIndex = 0;
+}
 
 /**
  * Collection of predefined currency states for the example cycle

@@ -1,206 +1,310 @@
-# Todo (Completed)
+# Todo
 
-## scripts.ts
+## scripts.ts – State Management
 
-- [x] **T001 · refactor · P0: redefine `CurrencyState` interface for raw data storage**
+- [x] **T001 · refactor · P0: remove exported mutable state from scripts.ts**
 
-  - **Context:** cr-01 Eliminate HTML Injection & Decouple HTML from State / Steps: 1
+  - **Context:** cr-01 Remove Exported Mutable State
   - **Action:**
-    1. In `scripts.ts`, redefine the `CurrencyState` interface to exclude HTML fields.
-    2. Include only raw data fields (e.g., `productName: string`, `productUrl: string`, `priceValue: number`, `priceCurrency: string`, `timeToEarn: string`).
+    1. Remove `export` from `let currentDisplayStateIndex = 0;` in `scripts.ts`.
+    2. Add internal getter `function _getCurrentStateIndex(): number { return currentDisplayStateIndex; }`
+    3. Add test-only reset function: `/** @internal */ export function _resetStateForTesting(): void { currentDisplayStateIndex = 0; }`
   - **Done‑when:**
-    1. `CurrencyState` interface in `scripts.ts` contains only non-HTML data fields.
-    2. Code involving `CurrencyState` interface definition compiles without type errors.
+    1. `currentDisplayStateIndex` is not exported.
+    2. State is managed internally within the module.
+    3. Tests can reliably reset state via a dedicated function.
   - **Depends‑on:** none
 
-- [x] **T002 · refactor · P0: update `currencyStates` array to new `CurrencyState` structure**
-
-  - **Context:** cr-01 Eliminate HTML Injection & Decouple HTML from State / Steps: 2
+- [ ] **T002 · refactor · P1: update internal consumers to use internal state variable**
+  - **Context:** cr-01 Remove Exported Mutable State
   - **Action:**
-    1. In `scripts.ts`, update the `currencyStates` array data.
-    2. Ensure each object in the array conforms to the new `CurrencyState` interface (defined in T001).
+    1. Change all internal references to use the now-internal state variable or getter.
   - **Done‑when:**
-    1. `currencyStates` array in `scripts.ts` contains objects conforming to the new raw data `CurrencyState` interface.
-    2. Code involving `currencyStates` data compiles without type errors.
+    1. No code references a removed export.
   - **Depends‑on:** [T001]
 
-- [x] **T003 · refactor · P0: refactor `applyState` to consume new `CurrencyState` and render DOM programmatically**
+## tests/scripts.test.ts – Test Isolation
 
-  - **Context:** cr-01 Eliminate HTML Injection & Decouple HTML from State / Steps: 3 & 4
+- [ ] **T003 · test · P0: use test-only reset function for state isolation in tests**
+  - **Context:** cr-04 Ensure Test State Isolation
   - **Action:**
-    1. Refactor `applyState` function in `scripts.ts` to accept a `CurrencyState` object (as per T001).
-    2. Replace `innerHTML` usage for constructing complex structures from variables with `document.createElement`, `element.setAttribute`, and `element.textContent`.
+    1. Import `_resetStateForTesting()` in all relevant test files.
+    2. Add `beforeEach(() => { _resetStateForTesting(); })` to test suites using state cycling.
   - **Done‑when:**
-    1. `innerHTML` is no longer used with variable data in `applyState` for constructing complex structures.
-    2. `applyState` programmatically creates DOM elements using raw data from the `CurrencyState` object.
-    3. The application functions correctly, displaying currency states using the new rendering logic.
+    1. Each test runs with a clean, predictable state.
+    2. Test runs are deterministic regardless of execution order.
   - **Verification:**
-    1. Manually test the `shiftExample` feature: ensure all currency states display correctly.
-    2. Inspect DOM to confirm elements (e.g., links) are built programmatically.
-    3. Confirm XSS vulnerability related to dynamic HTML in `applyState` is mitigated (e.g., by attempting to inject simple HTML tags if data source were dynamic, and observing they are rendered as text).
-  - **Depends‑on:** [T001, T002]
-
-- [x] **T004 · refactor · P1: use typed interface for `window` augmentation**
-
-  - **Context:** cr-03 Use Typed Interface for Window Augmentation (No `any`) / Steps: 1 & 2
-  - **Action:**
-    1. Define an interface `AppWindow extends Window { initializeApplication?: () => void; }` in `scripts.ts`.
-    2. Replace `(window as any).initializeApplication` assignment with `(window as AppWindow).initializeApplication = initializeApplication;`.
-  - **Done‑when:**
-    1. The `any` type assertion for `window` is removed from `scripts.ts`.
-    2. The code compiles successfully with TypeScript strict checks.
-  - **Verification:**
-    1. Run TypeScript compiler (e.g., `tsc --noEmit --project tsconfig.json`) and ensure no errors related to `window.initializeApplication`.
-  - **Depends‑on:** none
-
-- [x] **T005 · refactor · P0: introduce `currentDisplayStateIndex` for internal state tracking**
-
-  - **Context:** cr-02 Decouple State Logic from DOM / Steps: 1
-  - **Action:**
-    1. In `scripts.ts`, introduce a module-level variable `let currentDisplayStateIndex = 0;`.
-  - **Done‑when:**
-    1. The `currentDisplayStateIndex` variable is defined in `scripts.ts` to store the current state index.
-  - **Depends‑on:** none
-
-- [x] **T006 · refactor · P0: refactor `shiftExample` to use internal state index**
-
-  - **Context:** cr-02 Decouple State Logic from DOM / Steps: 2
-  - **Action:**
-    1. Refactor `shiftExample` in `scripts.ts` to calculate `nextStateIndex` using `(currentDisplayStateIndex + 1) % currencyStates.length`.
-    2. Update `currentDisplayStateIndex` to `nextStateIndex`.
-    3. Retrieve `nextStateData` from `currencyStates` using `currentDisplayStateIndex` and pass it to the refactored `applyState` function (from T003).
-  - **Done‑when:**
-    1. Core state transition logic in `shiftExample` operates on `currentDisplayStateIndex`.
-    2. `shiftExample` does not read from the DOM to determine current/next state for cycling.
-    3. The application correctly cycles through states using the internal index.
-  - **Verification:**
-    1. Manually test the `shiftExample` feature: ensure states cycle correctly and in the intended order.
-  - **Depends‑on:** [T003, T005]
-
-- [x] **T007 · refactor · P1: deprecate `findCurrentStateIndex` and remove its use in `shiftExample`**
-
-  - **Context:** cr-02 Decouple State Logic from DOM / Steps: 3
-  - **Action:**
-    1. Remove any calls to `findCurrentStateIndex` from the `shiftExample` function's core state cycling logic.
-    2. Mark `findCurrentStateIndex` with `/** @deprecated */` or remove if confirmed unused elsewhere.
-  - **Done‑when:**
-    1. `findCurrentStateIndex` is no longer essential for state cycling in `shiftExample`.
-    2. `findCurrentStateIndex` is marked as deprecated or removed.
-  - **Depends‑on:** [T006]
-
-- [x] **T008 · refactor · P1: replace `console.error` in `initializeApplication` with structured logging or `Error`**
-
-  - **Context:** cr-04 Implement Structured Logging (or Throw Error) for Operational Events / Steps: 1 & 2
-  - **Action:**
-    1. Based on availability of a structured logging utility (see Clarifications):
-       - If available: Replace `console.error` in `initializeApplication` (for missing elements) with a structured log call.
-       - If not available: Replace `console.error` and `return;` with `throw new Error('Initialization failed: One or more required DOM elements not found. Check for elements: currency-code, currency-symbol, etc.');`.
-  - **Done‑when:**
-    1. `console.error` is no longer used for the "required elements not found" operational log in `initializeApplication`.
-    2. The event is logged via the structured logger or an `Error` is thrown.
-  - **Verification:**
-    1. Temporarily modify HTML to cause the "missing elements" condition.
-    2. Verify that the application either emits a structured log or throws the specified `Error`.
-  - **Depends‑on:** none
-
-- [x] **T009 · refactor · P2: define and use named constant for `shiftExample` interval**
-
-  - **Context:** cr-10 Define Named Constant for Interval Magic Number / Steps: 1 & 2
-  - **Action:**
-    1. At the top of `scripts.ts` (or an appropriate constants file), define `const EXAMPLE_CYCLE_INTERVAL_MS = 4000;`.
-    2. Replace `setInterval(shiftExample, 4000)` with `setInterval(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);`.
-  - **Done‑when:**
-    1. The magic number `4000` in `setInterval` is replaced with the `EXAMPLE_CYCLE_INTERVAL_MS` constant.
-  - **Verification:**
-    1. Observe the `shiftExample` feature and confirm it still cycles at the 4-second interval.
-  - **Depends‑on:** none
-
-- [x] **T010 · chore · P3: correct TSDoc for `applyState` parameters**
-
-  - **Context:** cr-09 Correct TSDoc for `applyState` Parameters / Steps: 1 & 2
-  - **Action:**
-    1. Edit the TSDoc block for the `applyState` function in `scripts.ts`.
-    2. Remove the line: `@param elements - The DOM elements to update`.
-    3. Ensure TSDoc reflects actual parameters after refactor in T003.
-  - **Done‑when:**
-    1. The TSDoc for `applyState` accurately reflects its parameters.
-  - **Depends‑on:** [T003]
-
-- [x] **T011 · chore · P3: add TSDoc for `CurrencyState` interface**
-
-  - **Context:** cr-11 Add Documentation for `currencyStates` Structure (Post cr-01) / Steps: 1a
-  - **Action:**
-    1. Add a TSDoc comment to the `CurrencyState` interface in `scripts.ts`.
-    2. Explain its purpose and each of its data fields.
-  - **Done‑when:**
-    1. `CurrencyState` interface in `scripts.ts` has clear TSDoc documentation.
+    1. Run tests multiple times and ensure consistent results.
   - **Depends‑on:** [T001]
 
-- [x] **T012 · chore · P3: add block comment documentation for `currencyStates` array**
-  - **Context:** cr-11 Add Documentation for `currencyStates` Structure (Post cr-01) / Steps: 1b
+## scripts.ts – Core Logic Decoupling
+
+- [ ] **T004 · refactor · P0: extract pure core state machine logic from shiftExample**
+
+  - **Context:** cr-02 Decouple Core Logic from DOM
   - **Action:**
-    1. Add a block comment above the `currencyStates` array definition in `scripts.ts`.
-    2. Explain its role and how to add new currency example data, referencing the `CurrencyState` interface.
+    1. Create a pure function to determine the next state:
+       ```typescript
+       function getNextState(): CurrencyState {
+         const nextIndex = calculateNextStateIndex(currentDisplayStateIndex, currencyStates.length);
+         currentDisplayStateIndex = nextIndex;
+         return currencyStates[nextIndex];
+       }
+       ```
+    2. Ensure `currentDisplayStateIndex` is only mutated within pure logic boundaries.
   - **Done‑when:**
-    1. `currencyStates` array in `scripts.ts` has clear documentation.
-  - **Depends‑on:** [T002]
+    1. Pure logic functions have no DOM dependency.
+  - **Depends‑on:** [T001]
 
-## tests/scripts.test.ts
+- [ ] **T005 · refactor · P1: refactor shiftExample to orchestrate pure logic and DOM update**
 
-- [x] **T013 · test · P1: add unit tests for pure state transition logic**
-  - **Context:** cr-08 Add Pure Logic Unit Tests (Post cr-02) / Steps: 1 & 2
+  - **Context:** cr-02 Decouple Core Logic from DOM
   - **Action:**
-    1. Identify or create the pure function(s)/logic in `scripts.ts` responsible for calculating the next state index (from refactored `shiftExample` in T006).
-    2. In `tests/scripts.test.ts`, write unit tests for this logic, covering normal and wrap-around behavior. These tests should not require `jsdom`.
+
+    1. Update `shiftExample` to separate concerns:
+
+       ```typescript
+       export function shiftExample(): void {
+         // Get DOM elements
+         const elements = getRequiredDOMElements();
+         if (!elements) return;
+
+         // Compute next state (pure logic)
+         const nextState = getNextState();
+
+         // Apply state to DOM
+         applyState(nextState, elements.container);
+       }
+       ```
+
   - **Done‑when:**
-    1. Unit tests exist for the core state transition logic.
-    2. These tests pass and can run without a DOM environment.
-  - **Verification:**
-    1. Execute tests and confirm they pass.
-    2. Review test coverage for the state transition logic.
-  - **Depends‑on:** [T006]
+    1. `shiftExample` only wires together pure logic and DOM manipulation.
+  - **Depends‑on:** [T004]
 
-## Project Documentation
-
-- [x] **T014 · chore · P1: clarify/reinstate "Strict TypeScript Build" task in `BACKLOG.md`**
-  - **Context:** cr-05 Clarify/Reinstate "Strict TypeScript Build" Task in Backlog / Steps: 1 & 2
+- [ ] **T006 · test · P1: add unit tests for pure state logic**
+  - **Context:** cr-02 Decouple Core Logic from DOM
   - **Action:**
-    1. Review the current status of TypeScript strictness and legacy JavaScript in the project.
-    2. Based on the review, either:
-       a. Reinstate the "Configure Strict TypeScript Build & Remove All Legacy JavaScript" task in `BACKLOG.md` if objectives are not yet met.
-       b. Add a dated note to `BACKLOG.md` or `PLAN.md` clarifying why it was removed and its current status/plan.
+    1. Write unit tests for new/extracted pure state functions.
   - **Done‑when:**
-    1. `BACKLOG.md` accurately reflects the project's plan and progress towards full TypeScript strictness and legacy code elimination.
+    1. 100% test coverage on pure logic.
+  - **Depends‑on:** [T004]
+
+## scripts.ts – Security: URL Validation
+
+- [ ] **T007 · feature · P0: implement isValidHttpUrl utility function**
+
+  - **Context:** cr-03 Add URL Validation to Prevent XSS
+  - **Action:**
+    1. Add URL validation function:
+       ```typescript
+       function isValidHttpUrl(url: string): boolean {
+         try {
+           const parsed = new URL(url);
+           return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+         } catch {
+           return false;
+         }
+       }
+       ```
+  - **Done‑when:**
+    1. Function exists and is unit-tested for both valid and invalid URLs.
   - **Depends‑on:** none
 
----
+- [ ] **T008 · refactor · P1: apply URL validation before assigning to href in applyState**
 
-### Implementation Summary
+  - **Context:** cr-03 Add URL Validation to Prevent XSS / cr-08 Validate Product URLs Before Assignment
+  - **Action:**
+    1. Update `applyState` to validate URLs before assignment:
+       ```typescript
+       if (isValidHttpUrl(state.productUrl)) {
+         productLink.href = state.productUrl;
+       } else {
+         productLink.href = '#';
+         log('error', `Invalid URL skipped: ${state.productUrl}`, { component: 'applyState' });
+       }
+       ```
+  - **Done‑when:**
+    1. All DOM URL assignments are validated.
+  - **Verification:**
+    1. Manual: try to inject invalid URLs, ensure safe fallback and error logging.
+  - **Depends‑on:** [T007], [T011]
 
-All tasks have been successfully completed. The implementation addresses all issues identified in the code review:
+- [ ] **T009 · chore · P2: document URL validation and data trust assumptions**
+  - **Context:** cr-03 Add URL Validation to Prevent XSS / cr-08 Validate Product URLs Before Assignment
+  - **Action:**
+    1. Add comments about data trust and validation logic.
+  - **Done‑when:**
+    1. Source code documents trust boundary and validation approach.
+  - **Depends‑on:** [T008]
 
-1. **Security Improvements**:
+## scripts.ts – Logging
 
-   - Eliminated HTML injection risks by removing HTML from state data (T001, T002)
-   - Implemented DOM manipulation using safe methods: createElement, textContent (T003)
+- [ ] **T010 · feature · P0: implement minimal structured logger module**
 
-2. **Architectural Improvements**:
+  - **Context:** cr-05 Implement Structured Logging for Errors
+  - **Action:**
 
-   - Decoupled state logic from DOM manipulation with internal tracking (T005, T006)
-   - Created pure functions for state transitions (T006, T013)
-   - Added typed interface for window augmentation (T004)
+    1. Create a logger module with the following interface:
 
-3. **Code Quality**:
+       ```typescript
+       export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+       export interface LogContext {
+         [key: string]: any;
+         component?: string;
+         correlationId?: string;
+       }
 
-   - Added comprehensive documentation with TSDoc (T010, T011, T012)
-   - Used named constants for magic numbers (T009)
-   - Improved error handling with Error objects (T008)
-   - Added unit tests for pure logic functions (T013)
+       export function log(level: LogLevel, message: string, context?: LogContext): void {
+         const timestamp = new Date().toISOString();
+         const logEntry = {
+           timestamp,
+           level,
+           message,
+           ...context,
+         };
+         console[level](JSON.stringify(logEntry));
+       }
+       ```
 
-4. **Backlog Management**:
-   - Reinstated "Configure Strict TypeScript Build" task (T014)
+  - **Done‑when:**
+    1. Logger module is available and tested for correct output format.
+  - **Verification:**
+    1. Log entries include all required context fields.
+  - **Depends‑on:** none
 
-### Clarifications & Assumptions
+- [ ] **T011 · refactor · P1: add structured logging to all error paths**
+  - **Context:** cr-05 Implement Structured Logging for Errors
+  - **Action:**
+    1. Update error handling in functions to log before throwing:
+       ```typescript
+       if (!elements) {
+         log('error', 'Required DOM elements not found', {
+           component: 'shiftExample',
+           requiredElements: ['currency-code', 'currency-symbol', '...'],
+         });
+         throw new Error('Initialization failed: One or more required DOM elements not found');
+       }
+       ```
+  - **Done‑when:**
+    1. All error paths log structured events before throwing.
+  - **Verification:**
+    1. Trigger errors manually and verify log output format.
+  - **Depends‑on:** [T010]
 
-- [x] **Issue resolved:** Since no structured logging utility was found, we implemented the fallback approach of using `throw new Error()`
-  - **Context:** cr-04 Implement Structured Logging (or Throw Error) for Operational Events (affects T008)
+## scripts.ts – API Simplification
+
+- [ ] **T012 · refactor · P1: refactor applyState to accept single container element**
+
+  - **Context:** cr-07 Simplify DOM API for applyState
+  - **Action:**
+
+    1. Change `applyState` signature:
+
+       ```typescript
+       export function applyState(state: CurrencyState, container: HTMLElement): void {
+         const currencyCode = container.querySelector('#currency-code');
+         const currencySymbol = container.querySelector('#currency-symbol');
+         // etc...
+
+         if (!currencyCode || !currencySymbol /* etc... */) {
+           log('error', 'Required child elements not found in container', {
+             component: 'applyState',
+             containerId: container.id,
+           });
+           throw new Error('Container missing required child elements');
+         }
+
+         // Update elements as before
+       }
+       ```
+
+  - **Done‑when:**
+    1. API accepts only a container element, not individual elements.
+  - **Verification:**
+    1. Tests and usage updated, errors handled correctly.
+  - **Depends‑on:** [T011]
+
+- [ ] **T013 · refactor · P1: update all applyState callers to use container-based API**
+
+  - **Context:** cr-07 Simplify DOM API for applyState
+  - **Action:**
+    1. Update all usages in `shiftExample` and tests.
+  - **Done‑when:**
+    1. No callers use old multi-parameter form.
+  - **Depends‑on:** [T012]
+
+- [ ] **T014 · test · P2: verify error handling when child elements are missing**
+  - **Context:** cr-07 Simplify DOM API for applyState
+  - **Action:**
+    1. Test that missing child elements in container triggers structured logging and throws.
+  - **Done‑when:**
+    1. Test covers error and log output for missing elements.
+  - **Depends‑on:** [T012]
+
+## scripts.ts – Dead Code Removal
+
+- [ ] **T015 · chore · P2: remove deprecated findCurrentStateIndex function**
+  - **Context:** cr-06 Remove Deprecated `findCurrentStateIndex`
+  - **Action:**
+    1. Delete the `findCurrentStateIndex` function from `scripts.ts`.
+    2. Remove or update all references and related tests.
+  - **Done‑when:**
+    1. No deprecated code or related tests remain.
+  - **Depends‑on:** none
+
+## scripts.ts – Public API Hygiene
+
+- [ ] **T016 · refactor · P2: remove unnecessary exports from scripts.ts**
+  - **Context:** cr-09 Remove Unnecessary Exports
+  - **Action:**
+    1. Review all exports and remove `export` from internal utilities and constants.
+    2. Update imports in tests as necessary.
+  - **Done‑when:**
+    1. Only public API is exported.
+  - **Depends‑on:** none
+
+## tests/scripts.test.ts – Pure Logic Testing
+
+- [ ] **T017 · test · P0: add dedicated tests for pure logic functions**
+  - **Context:** cr-10 Add More Pure Logic Tests
+  - **Action:**
+    1. Create test suite for pure functions (`calculateNextStateIndex`, `getNextState`, `isValidHttpUrl`).
+    2. Ensure these tests don't depend on DOM environment.
+  - **Done‑when:**
+    1. All pure logic is tested in isolation.
+  - **Verification:**
+    1. Run tests with JSDOM disabled to confirm independence.
+  - **Depends‑on:** [T004], [T007]
+
+## tests/scripts.test.ts – Behavioral Testing
+
+- [ ] **T018 · test · P1: refactor state transition tests to focus on observable behavior**
+
+  - **Context:** cr-11 Refactor Implementation-Dependent Tests
+  - **Action:**
+
+    1. Update tests to check DOM/text output after calling `shiftExample`, not internal state:
+
+       ```typescript
+       test('cycles through currency states', () => {
+         // Initial state check
+         expect(document.getElementById('currency-code').textContent).toBe('USD');
+
+         // Call function multiple times and verify observable changes
+         shiftExample();
+         expect(document.getElementById('currency-code').textContent).toBe('USD'); // Second state
+
+         shiftExample();
+         expect(document.getElementById('currency-code').textContent).toBe('GBP'); // Third state
+
+         // etc...
+       });
+       ```
+
+    2. Remove tests that check implementation details.
+
+  - **Done‑when:**
+    1. Tests pass by observing user-visible changes only.
+  - **Verification:**
+    1. Implementation can change without breaking tests.
+  - **Depends‑on:** [T005]
