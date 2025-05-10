@@ -10,6 +10,11 @@ import {
   applyCopyrightText,
   startExampleInterval,
   initializeApplication,
+  findCurrentStateIndex,
+  applyState,
+  currencyStates,
+  EXAMPLE_CYCLE_INTERVAL_MS,
+  calculateNextStateIndex,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -101,6 +106,45 @@ describe('Time Is Money DOM Elements', () => {
   });
 });
 
+// Pure logic unit tests that don't require jsdom
+describe('State Transition Logic', () => {
+  test('calculateNextStateIndex returns correct next index', () => {
+    // Test from first state
+    expect(calculateNextStateIndex(0, currencyStates.length)).toBe(1);
+
+    // Test from middle state
+    expect(calculateNextStateIndex(2, currencyStates.length)).toBe(3);
+  });
+
+  test('calculateNextStateIndex wraps around at the end of the array', () => {
+    // Set to last state
+    const lastIndex = currencyStates.length - 1;
+    // Should wrap around to 0
+    expect(calculateNextStateIndex(lastIndex, currencyStates.length)).toBe(0);
+  });
+
+  test('state cycling covers all states in sequence', () => {
+    // Start from beginning
+    let currentIndex = 0;
+
+    // Track the sequence of indices we get
+    const sequence: number[] = [];
+
+    // Cycle through one complete revolution
+    for (let i = 0; i < currencyStates.length; i++) {
+      const nextIndex = calculateNextStateIndex(currentIndex, currencyStates.length);
+      sequence.push(nextIndex);
+      currentIndex = nextIndex;
+    }
+
+    // Check that we hit all indices in sequence
+    expect(sequence).toEqual([1, 2, 3, 4, 0]);
+
+    // And we're back at the start
+    expect(currentIndex).toBe(0);
+  });
+});
+
 // Separate describe block to avoid max-lines-per-function warning
 describe('Shift Example Transitions', () => {
   beforeEach(() => {
@@ -170,9 +214,11 @@ describe('Shift Example Transitions', () => {
     // Set up initial state (GBP, £)
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
 
     currencyCode.textContent = 'GBP';
     currencySymbol.textContent = '£';
+    payFrequency.textContent = 'yearly'; // Need to set the pay frequency to match our state definition
 
     // Call the function
     shiftExample();
@@ -186,9 +232,11 @@ describe('Shift Example Transitions', () => {
     // Set up initial state (EUR, €)
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
 
     currencyCode.textContent = 'EUR';
     currencySymbol.textContent = '€';
+    payFrequency.textContent = 'hourly'; // Match our state definition
 
     // Call the function
     shiftExample();
@@ -202,9 +250,11 @@ describe('Shift Example Transitions', () => {
     // Set up a state not matching any condition to trigger the else clause
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
 
     currencyCode.textContent = 'MXN';
     currencySymbol.textContent = '$';
+    payFrequency.textContent = 'hourly';
 
     // Call the function
     shiftExample();
@@ -216,24 +266,114 @@ describe('Shift Example Transitions', () => {
     expect(document.getElementById('pay-frequency')?.textContent).toBe('hourly');
   });
 
-  test('handles missing DOM elements gracefully', () => {
+  test('throws error when DOM elements are missing', () => {
     // Remove a required element
     document.getElementById('currency-code')?.remove();
 
-    // Setup console.error spy
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    // Call the function
-    shiftExample();
-
-    // Verify error was logged and function exited early
-    expect(consoleErrorSpy).toHaveBeenCalledWith('One or more required elements not found');
+    // Call the function and expect it to throw
+    expect(() => shiftExample()).toThrow(
+      'Initialization failed: One or more required DOM elements not found',
+    );
 
     // Ensure other elements weren't modified
     expect(document.getElementById('pay-frequency')?.textContent).toBe('hourly');
+  });
+});
 
-    // Restore console.error
-    consoleErrorSpy.mockRestore();
+// Tests for the new data-driven implementation
+describe('Data-Driven ShiftExample Implementation', () => {
+  beforeEach(() => {
+    // Create a mock document object
+    document.body.innerHTML = `
+      <div id="currency-code">USD</div>
+      <div id="currency-symbol">$</div>
+      <div id="income-amount">7.25</div>
+      <div id="pay-frequency">hourly</div>
+      <div id="example-product"></div>
+      <div id="example-price"></div>
+      <div id="copyright"></div>
+    `;
+  });
+
+  test('currencyStates array contains all expected states', () => {
+    // Verify that our data-driven approach has all required states
+    expect(currencyStates).toBeDefined();
+    expect(currencyStates.length).toBe(5);
+
+    // Check for specific state properties
+    const usdHourlyState = currencyStates[0];
+    expect(usdHourlyState.currencyCode).toBe('USD');
+    expect(usdHourlyState.payFrequency).toBe('hourly');
+
+    // Check specific state transitions
+    expect(currencyStates[1].currencyCode).toBe('USD');
+    expect(currencyStates[1].payFrequency).toBe('yearly');
+    expect(currencyStates[2].currencyCode).toBe('GBP');
+    expect(currencyStates[3].currencyCode).toBe('EUR');
+    expect(currencyStates[4].currencyCode).toBe('MXN');
+  });
+
+  test('findCurrentStateIndex returns correct index for matching state', () => {
+    // Get DOM elements
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
+
+    // Test default index (0 for USD hourly)
+    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(0);
+
+    // Test with changed DOM
+    currencyCode.textContent = 'GBP';
+    currencySymbol.textContent = '£';
+    payFrequency.textContent = 'yearly';
+    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(2);
+
+    // Test non-matching state
+    currencyCode.textContent = 'JPY'; // Not in our states
+    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(-1);
+  });
+
+  test('applyState correctly updates DOM with state data', () => {
+    // Get DOM elements
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const incomeAmount = document.getElementById('income-amount') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
+    const exampleProduct = document.getElementById('example-product') as HTMLElement;
+    const examplePrice = document.getElementById('example-price') as HTMLElement;
+
+    // Apply a specific state (EUR)
+    const eurState = currencyStates[3];
+    applyState(
+      eurState,
+      currencyCode,
+      currencySymbol,
+      incomeAmount,
+      payFrequency,
+      exampleProduct,
+      examplePrice,
+    );
+
+    // Verify DOM is updated correctly
+    expect(currencyCode.textContent).toBe('EUR');
+    expect(currencySymbol.textContent).toBe('€');
+    expect(incomeAmount.textContent).toBe('9,61');
+    expect(payFrequency.textContent).toBe('hourly');
+    expect(exampleProduct.innerHTML).toContain('Kindle Paperwhite');
+    expect(examplePrice.innerHTML).toContain('99,99');
+    expect(examplePrice.innerHTML).toContain('EUR');
+  });
+
+  test('full cycle transitions through all states in order', () => {
+    // Get DOM elements
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+
+    // Complete full cycle and check that we end up back at the start
+    for (let i = 0; i < currencyStates.length; i++) {
+      const expectedNextCode = currencyStates[(i + 1) % currencyStates.length].currencyCode;
+      shiftExample();
+      expect(currencyCode.textContent).toBe(expectedNextCode);
+    }
   });
 });
 
@@ -261,7 +401,7 @@ describe('Interval Timer', () => {
   });
 
   describe('startExampleInterval function', () => {
-    test('calls setInterval with shiftExample and 4000ms delay', () => {
+    test('calls setInterval with shiftExample and the defined interval delay', () => {
       // Create a spy on global.setInterval
       const setIntervalSpy = jest.spyOn(global, 'setInterval');
 
@@ -270,13 +410,13 @@ describe('Interval Timer', () => {
 
       // Verify setInterval was called with the correct arguments
       expect(setIntervalSpy).toHaveBeenCalledTimes(1);
-      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);
 
       // Clean up spy
       setIntervalSpy.mockRestore();
     });
 
-    test('timer uses the correct interval value of 4000ms', () => {
+    test('timer uses the correct interval value from EXAMPLE_CYCLE_INTERVAL_MS constant', () => {
       // Mock setInterval to capture and check the delay value
       jest.spyOn(global, 'setInterval');
 
@@ -284,10 +424,13 @@ describe('Interval Timer', () => {
       startExampleInterval();
 
       // Verify setInterval was called with the correct delay
-      expect(global.setInterval).toHaveBeenCalledWith(expect.any(Function), 4000);
+      expect(global.setInterval).toHaveBeenCalledWith(
+        expect.any(Function),
+        EXAMPLE_CYCLE_INTERVAL_MS,
+      );
 
-      // This test is specifically designed to fail if the interval value changes,
-      // which is used for verification in the task requirements
+      // Also verify the constant has the expected value
+      expect(EXAMPLE_CYCLE_INTERVAL_MS).toBe(4000);
     });
   });
 
@@ -312,7 +455,7 @@ describe('Interval Timer', () => {
       initializeApplication();
 
       // Verify setInterval was called with correct parameters (from startExampleInterval)
-      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);
 
       // Verify copyright was set (from applyCopyrightText)
       expect(copyright.innerHTML).toContain('Copyright © 2023');
