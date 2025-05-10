@@ -51,6 +51,16 @@ export const EXAMPLE_CYCLE_INTERVAL_MS = 4000;
 let currentDisplayStateIndex = 0;
 
 /**
+ * Gets the current display state index
+ * Internal accessor for the state variable
+ * @internal
+ * @returns The current state index
+ */
+function _getCurrentStateIndex(): number {
+  return currentDisplayStateIndex;
+}
+
+/**
  * Resets the current display state index to 0
  * This function is only for use in tests to ensure a clean state
  * @internal
@@ -148,7 +158,7 @@ export function calculateNextStateIndex(currentIndex: number, totalStates: numbe
  * @returns The next currency state to display
  */
 function getNextState(): CurrencyState {
-  const nextIndex = calculateNextStateIndex(currentDisplayStateIndex, currencyStates.length);
+  const nextIndex = calculateNextStateIndex(_getCurrentStateIndex(), currencyStates.length);
   currentDisplayStateIndex = nextIndex;
   return currencyStates[nextIndex];
 }

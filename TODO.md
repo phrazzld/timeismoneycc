@@ -15,7 +15,7 @@
     3. Tests can reliably reset state via a dedicated function.
   - **Depends‑on:** none
 
-- [ ] **T002 · refactor · P1: update internal consumers to use internal state variable**
+- [x] **T002 · refactor · P1: update internal consumers to use internal state variable**
   - **Context:** cr-01 Remove Exported Mutable State
   - **Action:**
     1. Change all internal references to use the now-internal state variable or getter.
