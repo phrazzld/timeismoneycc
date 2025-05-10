@@ -129,7 +129,7 @@
     1. Manual: try to inject invalid URLs, ensure safe fallback and error logging.
   - **Depends‑on:** [T007], [T011]
 
-- [ ] **T009 · chore · P2: document URL validation and data trust assumptions**
+- [x] **T009 · chore · P2: document URL validation and data trust assumptions**
   - **Context:** cr-03 Add URL Validation to Prevent XSS / cr-08 Validate Product URLs Before Assignment
   - **Action:**
     1. Add comments about data trust and validation logic.

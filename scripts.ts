@@ -18,6 +18,15 @@ export function startExampleInterval(): void {
  * Used for storing all information needed to display different currency examples
  * Each state represents a different income scenario (currency, amount, frequency)
  * along with a product example showing the time required to earn enough for that product
+ *
+ * @security Trust Boundary: The data in this interface is considered trusted within the application
+ * as it's defined statically in the codebase. However, the productUrl field requires special handling:
+ * - All productUrl values should be validated before use to prevent XSS attacks
+ * - Only HTTP and HTTPS URLs are considered valid for security
+ * - Invalid URLs are replaced with a safe fallback ('#') when rendered to the DOM
+ *
+ * This approach establishes a clear trust boundary where even data from known sources
+ * is validated before being used in sensitive contexts like href attributes.
  */
 export interface CurrencyState {
   /** Three-letter currency code (e.g., 'USD', 'GBP') */
@@ -325,9 +334,15 @@ export function applyState(
 
   // Create product element programmatically
   const productLink = document.createElement('a');
+
+  // URL Validation: Apply strict URL validation to prevent XSS attacks
+  // This is a critical security control that prevents malicious URLs like
+  // javascript:, data:, or other non-http protocols from being injected
   if (isValidHttpUrl(state.productUrl)) {
     productLink.href = state.productUrl;
   } else {
+    // Security measure: If URL is invalid, use a safe fallback
+    // and log the issue for monitoring and investigation
     productLink.href = '#';
     log('error', `Invalid URL skipped: ${state.productUrl}`, { component: 'applyState' });
   }
@@ -364,7 +379,22 @@ export function applyState(
 
 /**
  * Validates if a string is a valid HTTP or HTTPS URL
- * Protects against XSS by ensuring URLs are properly formatted
+ * Protects against XSS by ensuring URLs are properly formatted and use allowed protocols
+ *
+ * @security This function establishes a critical security boundary by:
+ * 1. Validating URL syntax through the URL constructor (catches malformed URLs)
+ * 2. Restricting to HTTP/HTTPS protocols only to prevent javascript: and data: URLs
+ *    that could enable XSS attacks
+ * 3. Providing consistent validation that can be applied across the application
+ *
+ * Common XSS attack vectors this prevents:
+ * - javascript:alert('XSS')
+ * - data:text/html,<script>alert('XSS')</script>
+ * - vbscript:... (in older IE browsers)
+ *
+ * Trust assumption: This function should be used for all URLs before they are
+ * assigned to href attributes or other DOM properties that can execute code.
+ *
  * @param url - The URL string to validate
  * @returns True if the URL is a valid HTTP or HTTPS URL, false otherwise
  */
