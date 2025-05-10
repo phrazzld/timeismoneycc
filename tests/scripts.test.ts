@@ -16,6 +16,7 @@ import {
   EXAMPLE_CYCLE_INTERVAL_MS,
   calculateNextStateIndex,
   _resetStateForTesting,
+  isValidHttpUrl,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -112,6 +113,31 @@ describe('State Transition Logic', () => {
   beforeEach(() => {
     _resetStateForTesting();
   });
+
+  describe('isValidHttpUrl function', () => {
+    test('validates correct HTTP and HTTPS URLs', () => {
+      // Valid URLs
+      expect(isValidHttpUrl('https://example.com')).toBe(true);
+      expect(isValidHttpUrl('http://example.com')).toBe(true);
+      expect(isValidHttpUrl('https://sub.example.com/path?query=param#hash')).toBe(true);
+      expect(isValidHttpUrl('http://localhost:3000')).toBe(true);
+      expect(isValidHttpUrl('https://142.251.32.110')).toBe(true);
+    });
+
+    test('rejects invalid or non-HTTP URLs', () => {
+      // Invalid or malformed URLs
+      expect(isValidHttpUrl('')).toBe(false);
+      expect(isValidHttpUrl('not a url')).toBe(false);
+      expect(isValidHttpUrl('example.com')).toBe(false); // Missing protocol
+
+      // Non-HTTP protocols
+      expect(isValidHttpUrl('ftp://example.com')).toBe(false);
+      expect(isValidHttpUrl('file:///path/to/file')).toBe(false);
+      expect(isValidHttpUrl('javascript:alert("XSS")')).toBe(false); // Important XSS vector
+      expect(isValidHttpUrl('data:text/html,<script>alert("XSS")</script>')).toBe(false); // Another XSS vector
+    });
+  });
+
   test('calculateNextStateIndex returns correct next index', () => {
     // Test from first state
     expect(calculateNextStateIndex(0, currencyStates.length)).toBe(1);

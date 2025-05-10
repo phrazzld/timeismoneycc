@@ -91,7 +91,7 @@
 
 ## scripts.ts – Security: URL Validation
 
-- [ ] **T007 · feature · P0: implement isValidHttpUrl utility function**
+- [x] **T007 · feature · P0: implement isValidHttpUrl utility function**
 
   - **Context:** cr-03 Add URL Validation to Prevent XSS
   - **Action:**

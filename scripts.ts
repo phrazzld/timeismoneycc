@@ -286,6 +286,21 @@ export function applyState(
 }
 
 /**
+ * Validates if a string is a valid HTTP or HTTPS URL
+ * Protects against XSS by ensuring URLs are properly formatted
+ * @param url - The URL string to validate
+ * @returns True if the URL is a valid HTTP or HTTPS URL, false otherwise
+ */
+export function isValidHttpUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Safely checks if an HTML element's text content matches the expected value.
  * @param element - The HTML element to check
  * @param val - The expected text content
