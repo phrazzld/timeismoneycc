@@ -25,7 +25,7 @@
 
 ## tests/scripts.test.ts – Test Isolation
 
-- [ ] **T003 · test · P0: use test-only reset function for state isolation in tests**
+- [x] **T003 · test · P0: use test-only reset function for state isolation in tests**
   - **Context:** cr-04 Ensure Test State Isolation
   - **Action:**
     1. Import `_resetStateForTesting()` in all relevant test files.

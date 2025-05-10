@@ -15,6 +15,7 @@ import {
   currencyStates,
   EXAMPLE_CYCLE_INTERVAL_MS,
   calculateNextStateIndex,
+  _resetStateForTesting,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -108,6 +109,9 @@ describe('Time Is Money DOM Elements', () => {
 
 // Pure logic unit tests that don't require jsdom
 describe('State Transition Logic', () => {
+  beforeEach(() => {
+    _resetStateForTesting();
+  });
   test('calculateNextStateIndex returns correct next index', () => {
     // Test from first state
     expect(calculateNextStateIndex(0, currencyStates.length)).toBe(1);
@@ -148,6 +152,9 @@ describe('State Transition Logic', () => {
 // Separate describe block to avoid max-lines-per-function warning
 describe('Shift Example Transitions', () => {
   beforeEach(() => {
+    // Reset the state to ensure test isolation
+    _resetStateForTesting();
+
     // Create a mock document object
     document.body.innerHTML = `
       <div id="currency-code">USD</div>
@@ -160,14 +167,41 @@ describe('Shift Example Transitions', () => {
     `;
   });
 
+  // Helper function to set internal state via DOM to match a specific index
+  function setupStateForIndex(index: number): void {
+    const state = currencyStates[index];
+    // Set DOM elements to match the state at the given index
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const incomeAmount = document.getElementById('income-amount') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
+
+    currencyCode.textContent = state.currencyCode;
+    currencySymbol.textContent = state.currencySymbol;
+    incomeAmount.textContent = state.incomeAmount;
+    payFrequency.textContent = state.payFrequency;
+
+    // Also need to reset the internal state to match the index
+    _resetStateForTesting();
+    // Since currentDisplayStateIndex is internal and starts at 0,
+    // we need to advance it to match our test setup
+    for (let i = 0; i < index; i++) {
+      shiftExample();
+    }
+  }
+
   test('transitions from default config (USD hourly) to yearly salary', () => {
-    // Set up initial state (USD, $, hourly)
+    // Set up initial state (USD hourly) - index 0
+    setupStateForIndex(0);
+
+    // Get DOM elements for verification
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
     const incomeAmount = document.getElementById('income-amount') as HTMLElement;
     const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
     const examplePrice = document.getElementById('example-price') as HTMLElement;
 
+    // Verify initial state
     expect(currencyCode.textContent).toBe('USD');
     expect(currencySymbol.textContent).toBe('$');
     expect(payFrequency.textContent).toBe('hourly');
@@ -185,18 +219,15 @@ describe('Shift Example Transitions', () => {
   });
 
   test('transitions from USD yearly to GBP', () => {
-    // Set up initial state (USD, $, yearly)
+    // Set up initial state (USD yearly) - index 1
+    setupStateForIndex(1);
+
+    // Get DOM elements for verification
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
     const incomeAmount = document.getElementById('income-amount') as HTMLElement;
-    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
     const exampleProduct = document.getElementById('example-product') as HTMLElement;
     const examplePrice = document.getElementById('example-price') as HTMLElement;
-
-    currencyCode.textContent = 'USD';
-    currencySymbol.textContent = '$';
-    incomeAmount.textContent = '50,756.00';
-    payFrequency.textContent = 'yearly';
 
     // Call the function
     shiftExample();
@@ -211,14 +242,12 @@ describe('Shift Example Transitions', () => {
   });
 
   test('transitions from GBP to EUR', () => {
-    // Set up initial state (GBP, £)
+    // Set up initial state (GBP) - index 2
+    setupStateForIndex(2);
+
+    // Get DOM elements for verification
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
-
-    currencyCode.textContent = 'GBP';
-    currencySymbol.textContent = '£';
-    payFrequency.textContent = 'yearly'; // Need to set the pay frequency to match our state definition
 
     // Call the function
     shiftExample();
@@ -229,14 +258,12 @@ describe('Shift Example Transitions', () => {
   });
 
   test('transitions from EUR to MXN', () => {
-    // Set up initial state (EUR, €)
+    // Set up initial state (EUR) - index 3
+    setupStateForIndex(3);
+
+    // Get DOM elements for verification
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
-
-    currencyCode.textContent = 'EUR';
-    currencySymbol.textContent = '€';
-    payFrequency.textContent = 'hourly'; // Match our state definition
 
     // Call the function
     shiftExample();
@@ -247,14 +274,12 @@ describe('Shift Example Transitions', () => {
   });
 
   test('transitions from MXN back to USD hourly', () => {
-    // Set up a state not matching any condition to trigger the else clause
+    // Set up initial state (MXN) - index 4
+    setupStateForIndex(4);
+
+    // Get DOM elements for verification
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
-
-    currencyCode.textContent = 'MXN';
-    currencySymbol.textContent = '$';
-    payFrequency.textContent = 'hourly';
 
     // Call the function
     shiftExample();
@@ -283,6 +308,9 @@ describe('Shift Example Transitions', () => {
 // Tests for the new data-driven implementation
 describe('Data-Driven ShiftExample Implementation', () => {
   beforeEach(() => {
+    // Reset the state to ensure test isolation
+    _resetStateForTesting();
+
     // Create a mock document object
     document.body.innerHTML = `
       <div id="currency-code">USD</div>
@@ -365,6 +393,9 @@ describe('Data-Driven ShiftExample Implementation', () => {
   });
 
   test('full cycle transitions through all states in order', () => {
+    // Reset internal state to start from the beginning
+    _resetStateForTesting();
+
     // Get DOM elements
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
 
