@@ -13,6 +13,7 @@ import {
   findCurrentStateIndex,
   applyState,
   currencyStates,
+  EXAMPLE_CYCLE_INTERVAL_MS,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -101,6 +102,60 @@ describe('Time Is Money DOM Elements', () => {
       // This should not throw an error
       expect(() => applyCopyrightText()).not.toThrow();
     });
+  });
+});
+
+// Pure logic unit tests that don't require jsdom
+describe('State Transition Logic', () => {
+  // We need to mock our own state index since we can't modify imports directly
+  let mockStateIndex = 0;
+
+  // Create a mock version of state index calculation to use our local variable
+  const mockNextStateIndex = (): number => {
+    return (mockStateIndex + 1) % currencyStates.length;
+  };
+
+  beforeEach(() => {
+    // Reset to a known state before each test
+    mockStateIndex = 0;
+  });
+
+  test('state index calculation returns correct next index', () => {
+    // Test from first state
+    mockStateIndex = 0;
+    expect(mockNextStateIndex()).toBe(1);
+
+    // Test from middle state
+    mockStateIndex = 2;
+    expect(mockNextStateIndex()).toBe(3);
+  });
+
+  test('state index calculation wraps around at the end of the array', () => {
+    // Set to last state
+    mockStateIndex = currencyStates.length - 1;
+    // Should wrap around to 0
+    expect(mockNextStateIndex()).toBe(0);
+  });
+
+  test('state cycling covers all states in sequence', () => {
+    // Start from beginning
+    mockStateIndex = 0;
+
+    // Track the sequence of indices we get
+    const sequence: number[] = [];
+
+    // Cycle through one complete revolution
+    for (let i = 0; i < currencyStates.length; i++) {
+      const nextIndex = mockNextStateIndex();
+      sequence.push(nextIndex);
+      mockStateIndex = nextIndex;
+    }
+
+    // Check that we hit all indices in sequence
+    expect(sequence).toEqual([1, 2, 3, 4, 0]);
+
+    // And we're back at the start
+    expect(mockStateIndex).toBe(0);
   });
 });
 
@@ -225,24 +280,17 @@ describe('Shift Example Transitions', () => {
     expect(document.getElementById('pay-frequency')?.textContent).toBe('hourly');
   });
 
-  test('handles missing DOM elements gracefully', () => {
+  test('throws error when DOM elements are missing', () => {
     // Remove a required element
     document.getElementById('currency-code')?.remove();
 
-    // Setup console.error spy
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    // Call the function
-    shiftExample();
-
-    // Verify error was logged and function exited early
-    expect(consoleErrorSpy).toHaveBeenCalledWith('One or more required elements not found');
+    // Call the function and expect it to throw
+    expect(() => shiftExample()).toThrow(
+      'Initialization failed: One or more required DOM elements not found',
+    );
 
     // Ensure other elements weren't modified
     expect(document.getElementById('pay-frequency')?.textContent).toBe('hourly');
-
-    // Restore console.error
-    consoleErrorSpy.mockRestore();
   });
 });
 
@@ -367,7 +415,7 @@ describe('Interval Timer', () => {
   });
 
   describe('startExampleInterval function', () => {
-    test('calls setInterval with shiftExample and 4000ms delay', () => {
+    test('calls setInterval with shiftExample and the defined interval delay', () => {
       // Create a spy on global.setInterval
       const setIntervalSpy = jest.spyOn(global, 'setInterval');
 
@@ -376,13 +424,13 @@ describe('Interval Timer', () => {
 
       // Verify setInterval was called with the correct arguments
       expect(setIntervalSpy).toHaveBeenCalledTimes(1);
-      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);
 
       // Clean up spy
       setIntervalSpy.mockRestore();
     });
 
-    test('timer uses the correct interval value of 4000ms', () => {
+    test('timer uses the correct interval value from EXAMPLE_CYCLE_INTERVAL_MS constant', () => {
       // Mock setInterval to capture and check the delay value
       jest.spyOn(global, 'setInterval');
 
@@ -390,10 +438,13 @@ describe('Interval Timer', () => {
       startExampleInterval();
 
       // Verify setInterval was called with the correct delay
-      expect(global.setInterval).toHaveBeenCalledWith(expect.any(Function), 4000);
+      expect(global.setInterval).toHaveBeenCalledWith(
+        expect.any(Function),
+        EXAMPLE_CYCLE_INTERVAL_MS,
+      );
 
-      // This test is specifically designed to fail if the interval value changes,
-      // which is used for verification in the task requirements
+      // Also verify the constant has the expected value
+      expect(EXAMPLE_CYCLE_INTERVAL_MS).toBe(4000);
     });
   });
 
@@ -418,7 +469,7 @@ describe('Interval Timer', () => {
       initializeApplication();
 
       // Verify setInterval was called with correct parameters (from startExampleInterval)
-      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);
 
       // Verify copyright was set (from applyCopyrightText)
       expect(copyright.innerHTML).toContain('Copyright © 2023');

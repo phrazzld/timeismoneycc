@@ -28,12 +28,6 @@ This backlog outlines planned work for the "timeismoneycc" project. It balances 
   - **Expected Outcome**: Core business logic extracted into pure, testable TypeScript functions or modules, independent of DOM elements. These functions can be unit-tested without a browser environment.
   - **Dependencies**: None
 
-- **[Completed]**: **Refactor `shiftExample` to be Data-Driven**
-  - **Complexity**: Medium
-  - **Rationale**: Reduces verbosity and improves maintainability of the `shiftExample` function by adopting a data-driven structure over extensive conditionals. Contributes to code quality, Simplicity, and Code Size Optimization.
-  - **Expected Outcome**: `shiftExample` logic is refactored to use a configuration map or array of state objects, leading to reduced lines of code, simpler logic, and easier extensibility.
-  - **Dependencies**: Isolate Core Application Logic from DOM Manipulation (Note: This dependency was partially addressed as we focused on restructuring the function but did not fully decouple from DOM manipulation)
-
 ### Product Definition & User Value
 
 - **[Feature]**: **Define Compelling Visual Design Language & High-Conversion UX Strategy**
@@ -86,6 +80,13 @@ This backlog outlines planned work for the "timeismoneycc" project. It balances 
   - **Rationale**: Enforces markup quality by treating HTML validation errors as build failures, aligning with the principle of failing on any linting/validation error.
   - **Expected Outcome**: CI workflow step for HTML validation is configured to fail the build upon detecting errors, once initial validation issues are resolved.
   - **Dependencies**: Core CI Pipeline Setup
+
+- **[Enhancement]**: **Configure Strict TypeScript Build & Remove All Legacy JavaScript**
+
+  - **Complexity**: Medium
+  - **Rationale**: Ensures code quality and type safety by enforcing strict type checking rules. Reduces maintenance overhead by standardizing on TypeScript for all code. Aligns with "Type-Safe by Default" and "Explicit is Better than Implicit" principles.
+  - **Expected Outcome**: `tsconfig.json` configured with `strict: true` and other strict flags. All code (especially newly refactored logic) compiled successfully under strict checking. Legacy JavaScript files like `scripts.js` removed from the codebase.
+  - **Dependencies**: None
 
 - **[Enhancement]**: **Implement Comprehensive Build-Time Asset Minification**
   - **Complexity**: Medium
@@ -284,9 +285,9 @@ This backlog outlines planned work for the "timeismoneycc" project. It balances 
 - **[Size Optimization]**: **Remove Legacy `scripts.js` File After Full TypeScript Migration**
 
   - **Complexity**: Simple
-  - **Rationale**: The `scripts.js` file is a legacy JavaScript version of `scripts.ts`. Once the TypeScript version is fully functional and adopted (as per "Configure Strict TypeScript Build & Remove Legacy JS"), this file becomes pure duplication, increasing codebase size and maintenance overhead.
+  - **Rationale**: The `scripts.js` file is a legacy JavaScript version of `scripts.ts`. Once the TypeScript version is fully functional and adopted (as per "Configure Strict TypeScript Build & Remove All Legacy JavaScript"), this file becomes pure duplication, increasing codebase size and maintenance overhead.
   - **Expected Outcome**: Removal of `scripts.js` (approx. 50-100 LOC reduction). Reduces final bundle size by eliminating a redundant asset. Simplifies codebase and build configuration.
-  - **Dependencies**: Configure Strict TypeScript Build & Remove Legacy JS
+  - **Dependencies**: Configure Strict TypeScript Build & Remove All Legacy JavaScript
 
 - **[Size Optimization]**: **Replace Bootstrap 3 CSS with a Purged Utility-First CSS Framework (e.g., Tailwind CSS)**
   - **Complexity**: Complex
