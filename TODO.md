@@ -139,7 +139,7 @@
 
 ## scripts.ts – Logging
 
-- [ ] **T010 · feature · P0: implement minimal structured logger module**
+- [x] **T010 · feature · P0: implement minimal structured logger module**
 
   - **Context:** cr-05 Implement Structured Logging for Errors
   - **Action:**
