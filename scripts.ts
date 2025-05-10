@@ -141,6 +141,17 @@ export function calculateNextStateIndex(currentIndex: number, totalStates: numbe
 }
 
 /**
+ * Pure function that determines the next currency state
+ * Handles only the state transition logic without DOM interactions
+ * @returns The next currency state to display
+ */
+function getNextState(): CurrencyState {
+  const nextIndex = calculateNextStateIndex(currentDisplayStateIndex, currencyStates.length);
+  currentDisplayStateIndex = nextIndex;
+  return currencyStates[nextIndex];
+}
+
+/**
  * Updates the example display to show different currency and income scenarios.
  * Uses a data-driven approach to cycle through different examples of prices converted to work hours.
  * Uses internal state tracking rather than reading from the DOM to determine the current state.
@@ -166,14 +177,8 @@ export function shiftExample(): void {
     );
   }
 
-  // Calculate the next state index using pure function
-  const nextStateIndex = calculateNextStateIndex(currentDisplayStateIndex, currencyStates.length);
-
-  // Update our internal state tracker
-  currentDisplayStateIndex = nextStateIndex;
-
-  // Get the next state data
-  const nextState = currencyStates[currentDisplayStateIndex];
+  // Compute next state (pure logic)
+  const nextState = getNextState();
 
   // Apply the next state to the DOM
   applyState(

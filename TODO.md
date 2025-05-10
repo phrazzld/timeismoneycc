@@ -39,7 +39,7 @@
 
 ## scripts.ts – Core Logic Decoupling
 
-- [ ] **T004 · refactor · P0: extract pure core state machine logic from shiftExample**
+- [x] **T004 · refactor · P0: extract pure core state machine logic from shiftExample**
 
   - **Context:** cr-02 Decouple Core Logic from DOM
   - **Action:**
