@@ -303,8 +303,137 @@ export function findCurrentStateIndex(
 }
 
 /**
- * Applies a currency state to the DOM elements
+ * Applies a currency state to DOM elements in a container or to individual elements
  * Creates DOM elements programmatically to avoid HTML injection
+ * @param state - The currency state to apply
+ * @param containerOrElement - The container element or first element
+ * @param currencySymbol - (Optional) The currency symbol element if not using container
+ * @param incomeAmount - (Optional) The income amount element if not using container
+ * @param payFrequency - (Optional) The pay frequency element if not using container
+ * @param exampleProduct - (Optional) The example product element if not using container
+ * @param examplePrice - (Optional) The example price element if not using container
+ */
+export function applyState(
+  state: CurrencyState,
+  containerOrElement: HTMLElement,
+  currencySymbol?: HTMLElement,
+  incomeAmount?: HTMLElement,
+  payFrequency?: HTMLElement,
+  exampleProduct?: HTMLElement,
+  examplePrice?: HTMLElement,
+): void {
+  // If we have additional parameters, assume we're using the old API
+  if (arguments.length > 2) {
+    // Call the legacy version with all arguments
+    applyStateWithElements(
+      state,
+      containerOrElement, // This is actually currencyCode in the old API
+      currencySymbol as HTMLElement,
+      incomeAmount as HTMLElement,
+      payFrequency as HTMLElement,
+      exampleProduct as HTMLElement,
+      examplePrice as HTMLElement,
+    );
+    return;
+  }
+
+  // Otherwise, use the container version
+  const container = containerOrElement;
+  // Find all required elements within the container
+  const currencyCodeElement = container.querySelector('#currency-code');
+  const currencySymbolElement = container.querySelector('#currency-symbol');
+  const incomeAmountElement = container.querySelector('#income-amount');
+  const payFrequencyElement = container.querySelector('#pay-frequency');
+  const exampleProductElement = container.querySelector('#example-product');
+  const examplePriceElement = container.querySelector('#example-price');
+
+  // Check if all required elements exist
+  const elementsToCheck = [
+    { element: currencyCodeElement, id: 'currency-code' },
+    { element: currencySymbolElement, id: 'currency-symbol' },
+    { element: incomeAmountElement, id: 'income-amount' },
+    { element: payFrequencyElement, id: 'pay-frequency' },
+    { element: exampleProductElement, id: 'example-product' },
+    { element: examplePriceElement, id: 'example-price' },
+  ];
+
+  const missingElements = elementsToCheck.filter((item) => !item.element).map((item) => item.id);
+
+  if (missingElements.length > 0) {
+    log('error', 'Required child elements not found in container', {
+      component: 'applyState',
+      containerId: container.id || '[unnamed]',
+      missingElements,
+    });
+    throw new Error('Container missing required child elements');
+  }
+
+  // Since we've verified all elements exist, we can safely cast them
+  const currencyCodeEl = currencyCodeElement as HTMLElement;
+  const currencySymbolEl = currencySymbolElement as HTMLElement;
+  const incomeAmountEl = incomeAmountElement as HTMLElement;
+  const payFrequencyEl = payFrequencyElement as HTMLElement;
+  const exampleProductEl = exampleProductElement as HTMLElement;
+  const examplePriceEl = examplePriceElement as HTMLElement;
+
+  // Update basic text fields
+  currencyCodeEl.textContent = state.currencyCode;
+  currencySymbolEl.textContent = state.currencySymbol;
+  incomeAmountEl.textContent = state.incomeAmount;
+  payFrequencyEl.textContent = state.payFrequency;
+
+  // Clear any existing content
+  exampleProductEl.innerHTML = '';
+  examplePriceEl.innerHTML = '';
+
+  // Create product element programmatically
+  const productLink = document.createElement('a');
+
+  // URL Validation: Apply strict URL validation to prevent XSS attacks
+  // This is a critical security control that prevents malicious URLs like
+  // javascript:, data:, or other non-http protocols from being injected
+  if (isValidHttpUrl(state.productUrl)) {
+    productLink.href = state.productUrl;
+  } else {
+    // Security measure: If URL is invalid, use a safe fallback
+    // and log the issue for monitoring and investigation
+    productLink.href = '#';
+    log('error', `Invalid URL skipped: ${state.productUrl}`, { component: 'applyState' });
+  }
+  productLink.target = '_blank';
+  productLink.textContent = state.productName;
+  exampleProductEl.appendChild(productLink);
+
+  // Add a colon after the product if not MXN (MXN example doesn't have one)
+  if (state.currencyCode !== 'MXN') {
+    exampleProductEl.appendChild(document.createTextNode(': '));
+  }
+
+  // Create price element programmatically
+  const priceContainer = document.createElement('span');
+  priceContainer.className = 'example-money';
+
+  // Different formatting for EUR vs other currencies
+  if (state.currencyCode === 'EUR') {
+    priceContainer.textContent = state.priceValue + ' ';
+    const currencySpan = document.createElement('span');
+    currencySpan.textContent = 'EUR';
+    priceContainer.appendChild(currencySpan);
+  } else {
+    const currencySpan = document.createElement('span');
+    currencySpan.textContent = state.currencySymbol;
+    priceContainer.appendChild(currencySpan);
+    priceContainer.appendChild(document.createTextNode(state.priceValue));
+  }
+
+  // Add time to earn
+  priceContainer.appendChild(document.createTextNode(' (' + state.timeToEarn + ')'));
+  examplePriceEl.appendChild(priceContainer);
+}
+
+/**
+ * Legacy version of applyState that accepts individual elements
+ * @deprecated Use the container-based version instead
  * @param state - The currency state to apply
  * @param currencyCode - The element to display the currency code
  * @param currencySymbol - The element to display the currency symbol
@@ -313,7 +442,7 @@ export function findCurrentStateIndex(
  * @param exampleProduct - The element to display the product example
  * @param examplePrice - The element to display the price example
  */
-export function applyState(
+export function applyStateWithElements(
   state: CurrencyState,
   currencyCode: HTMLElement,
   currencySymbol: HTMLElement,

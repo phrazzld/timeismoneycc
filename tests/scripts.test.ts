@@ -496,7 +496,7 @@ describe('Data-Driven ShiftExample Implementation', () => {
     expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(-1);
   });
 
-  test('applyState correctly updates DOM with state data', () => {
+  test('applyState (legacy) correctly updates DOM with state data', () => {
     // Get DOM elements
     const currencyCode = document.getElementById('currency-code') as HTMLElement;
     const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
@@ -525,6 +525,106 @@ describe('Data-Driven ShiftExample Implementation', () => {
     expect(exampleProduct.innerHTML).toContain('Kindle Paperwhite');
     expect(examplePrice.innerHTML).toContain('99,99');
     expect(examplePrice.innerHTML).toContain('EUR');
+  });
+
+  test('applyState with container correctly updates DOM with state data', () => {
+    // Create a container with all necessary elements
+    document.body.innerHTML = `
+      <div id="test-container">
+        <div id="currency-code">USD</div>
+        <div id="currency-symbol">$</div>
+        <div id="income-amount">7.25</div>
+        <div id="pay-frequency">hourly</div>
+        <div id="example-product"></div>
+        <div id="example-price"></div>
+      </div>
+    `;
+
+    const container = document.getElementById('test-container') as HTMLElement;
+
+    // Apply a specific state (GBP)
+    const gbpState = currencyStates[2];
+
+    // Call with container
+    applyState(gbpState, container);
+
+    // Verify DOM is updated correctly through container
+    const currencyCode = container.querySelector('#currency-code');
+    const currencySymbol = container.querySelector('#currency-symbol');
+    const incomeAmount = container.querySelector('#income-amount');
+    const payFrequency = container.querySelector('#pay-frequency');
+    const exampleProduct = container.querySelector('#example-product');
+    const examplePrice = container.querySelector('#example-price');
+
+    expect(currencyCode?.textContent).toBe('GBP');
+    expect(currencySymbol?.textContent).toBe('£');
+    expect(incomeAmount?.textContent).toBe('26,500.00');
+    expect(payFrequency?.textContent).toBe('yearly');
+    expect(exampleProduct?.innerHTML).toContain('Bulk crisps');
+    expect(examplePrice?.innerHTML).toContain('£');
+    expect(examplePrice?.innerHTML).toContain('24.99');
+  });
+
+  test('applyState with container handles EUR formatting correctly', () => {
+    // Create a container with all necessary elements
+    document.body.innerHTML = `
+      <div id="eur-container">
+        <div id="currency-code">USD</div>
+        <div id="currency-symbol">$</div>
+        <div id="income-amount">7.25</div>
+        <div id="pay-frequency">hourly</div>
+        <div id="example-product"></div>
+        <div id="example-price"></div>
+      </div>
+    `;
+
+    const container = document.getElementById('eur-container') as HTMLElement;
+
+    // Apply a specific state (EUR)
+    const eurState = currencyStates[3];
+
+    // Call with container
+    applyState(eurState, container);
+
+    // Verify EUR-specific formatting in price element
+    const examplePrice = container.querySelector('#example-price');
+
+    expect(examplePrice?.innerHTML).toContain('99,99');
+    expect(examplePrice?.innerHTML).toContain('EUR');
+    expect(examplePrice?.innerHTML).not.toContain('€'); // EUR uses text, not symbol
+  });
+
+  test('applyState with container throws error when elements are missing', () => {
+    // Create a container with missing elements
+    document.body.innerHTML = `
+      <div id="incomplete-container">
+        <div id="currency-code">USD</div>
+        <div id="currency-symbol">$</div>
+        <!-- Missing income-amount -->
+        <div id="pay-frequency">hourly</div>
+        <div id="example-product"></div>
+        <div id="example-price"></div>
+      </div>
+    `;
+
+    // Create a spy on the error logger
+    const logSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const container = document.getElementById('incomplete-container') as HTMLElement;
+    const gbpState = currencyStates[2];
+
+    // Expect applying state to throw an error
+    expect(() => applyState(gbpState, container)).toThrow(
+      'Container missing required child elements',
+    );
+
+    // Verify the log was called with the correct parameters
+    expect(logSpy).toHaveBeenCalled();
+    const logCall = JSON.parse(logSpy.mock.calls[0][0]);
+    expect(logCall.component).toBe('applyState');
+    expect(logCall.missingElements).toContain('income-amount');
+
+    logSpy.mockRestore();
   });
 
   test('applyState handles invalid URLs correctly', () => {

@@ -193,7 +193,7 @@
 
 ## scripts.ts – API Simplification
 
-- [ ] **T012 · refactor · P1: refactor applyState to accept single container element**
+- [x] **T012 · refactor · P1: refactor applyState to accept single container element**
 
   - **Context:** cr-07 Simplify DOM API for applyState
   - **Action:**
