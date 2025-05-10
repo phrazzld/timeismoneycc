@@ -81,7 +81,7 @@
     1. `shiftExample` only wires together pure logic and DOM manipulation.
   - **Depends‑on:** [T004]
 
-- [ ] **T006 · test · P1: add unit tests for pure state logic**
+- [x] **T006 · test · P1: add unit tests for pure state logic**
   - **Context:** cr-02 Decouple Core Logic from DOM
   - **Action:**
     1. Write unit tests for new/extracted pure state functions.
@@ -110,7 +110,7 @@
     1. Function exists and is unit-tested for both valid and invalid URLs.
   - **Depends‑on:** none
 
-- [ ] **T008 · refactor · P1: apply URL validation before assigning to href in applyState**
+- [x] **T008 · refactor · P1: apply URL validation before assigning to href in applyState**
 
   - **Context:** cr-03 Add URL Validation to Prevent XSS / cr-08 Validate Product URLs Before Assignment
   - **Action:**

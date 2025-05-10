@@ -109,7 +109,7 @@ describe('Time Is Money DOM Elements', () => {
 });
 
 // Pure logic unit tests that don't require jsdom
-describe('State Transition Logic', () => {
+describe('URL and State Index Logic', () => {
   beforeEach(() => {
     _resetStateForTesting();
   });
@@ -138,19 +138,32 @@ describe('State Transition Logic', () => {
     });
   });
 
-  test('calculateNextStateIndex returns correct next index', () => {
-    // Test from first state
-    expect(calculateNextStateIndex(0, currencyStates.length)).toBe(1);
+  describe('calculateNextStateIndex function', () => {
+    test('returns correct next index', () => {
+      // Test from first state
+      expect(calculateNextStateIndex(0, currencyStates.length)).toBe(1);
 
-    // Test from middle state
-    expect(calculateNextStateIndex(2, currencyStates.length)).toBe(3);
-  });
+      // Test from middle state
+      expect(calculateNextStateIndex(2, currencyStates.length)).toBe(3);
+    });
 
-  test('calculateNextStateIndex wraps around at the end of the array', () => {
-    // Set to last state
-    const lastIndex = currencyStates.length - 1;
-    // Should wrap around to 0
-    expect(calculateNextStateIndex(lastIndex, currencyStates.length)).toBe(0);
+    test('wraps around at the end of the array', () => {
+      // Set to last state
+      const lastIndex = currencyStates.length - 1;
+      // Should wrap around to 0
+      expect(calculateNextStateIndex(lastIndex, currencyStates.length)).toBe(0);
+    });
+
+    test('handles edge cases', () => {
+      // Negative index (should still work, though not expected in real usage)
+      expect(calculateNextStateIndex(-1, currencyStates.length)).toBe(0);
+
+      // Zero total states (edge case)
+      expect(calculateNextStateIndex(0, 0)).toBeNaN(); // Division by zero results in NaN
+
+      // Very large index
+      expect(calculateNextStateIndex(1000, 5)).toBe(1); // 1000 + 1 = 1001, 1001 % 5 = 1
+    });
   });
 
   test('state cycling covers all states in sequence', () => {
@@ -172,6 +185,102 @@ describe('State Transition Logic', () => {
 
     // And we're back at the start
     expect(currentIndex).toBe(0);
+  });
+});
+
+// Tests for getNextState function
+describe('GetNextState Pure Logic', () => {
+  beforeEach(() => {
+    // Reset state before each test
+    _resetStateForTesting();
+  });
+
+  test('returns the next currency state in sequence', () => {
+    // We can't directly test getNextState (non-exported), so we test shiftExample which uses it
+    // Reset state to ensure we're at the beginning
+    _resetStateForTesting();
+
+    const elements = {
+      currencyCode: document.getElementById('currency-code') as HTMLElement,
+      currencySymbol: document.getElementById('currency-symbol') as HTMLElement,
+      incomeAmount: document.getElementById('income-amount') as HTMLElement,
+      payFrequency: document.getElementById('pay-frequency') as HTMLElement,
+    };
+
+    // Properly set up the DOM to match the starting state
+    elements.currencyCode.textContent = currencyStates[0].currencyCode;
+    elements.currencySymbol.textContent = currencyStates[0].currencySymbol;
+    elements.incomeAmount.textContent = currencyStates[0].incomeAmount;
+    elements.payFrequency.textContent = currencyStates[0].payFrequency;
+
+    // Verify initial state (USD hourly)
+    expect(elements.currencyCode.textContent).toBe('USD');
+    expect(elements.payFrequency.textContent).toBe('hourly');
+
+    // Call shiftExample to trigger getNextState
+    shiftExample();
+
+    // Should now be USD yearly
+    expect(elements.currencyCode.textContent).toBe('USD');
+    expect(elements.payFrequency.textContent).toBe('yearly');
+
+    // Call again
+    shiftExample();
+
+    // Should now be GBP
+    expect(elements.currencyCode.textContent).toBe('GBP');
+
+    // Reset state and rebuild the DOM to match initial state
+    _resetStateForTesting();
+
+    // Reset the DOM elements to match initial state
+    elements.currencyCode.textContent = currencyStates[0].currencyCode;
+    elements.payFrequency.textContent = currencyStates[0].payFrequency;
+
+    // Verify we're back to USD hourly
+    expect(elements.currencyCode.textContent).toBe('USD');
+    expect(elements.payFrequency.textContent).toBe('hourly');
+  });
+
+  test('cycles through all states in order', () => {
+    // Track the sequence of currency codes we observe
+    const expectedSequence = currencyStates
+      .slice(1) // Start from index 1
+      .concat(currencyStates.slice(0, 1)) // Add index 0 at the end
+      .map((state) => state.currencyCode);
+
+    const actualSequence: string[] = [];
+    const currencyCodeElement = document.getElementById('currency-code') as HTMLElement;
+
+    // Cycle through all states
+    for (let i = 0; i < currencyStates.length; i++) {
+      shiftExample();
+      const textContent = currencyCodeElement.textContent;
+      actualSequence.push(textContent !== null ? textContent : '');
+    }
+
+    // Verify the sequence matches our expectations
+    expect(actualSequence).toEqual(expectedSequence);
+  });
+
+  test('returns to initial state after a complete cycle', () => {
+    // Get initial state
+    const initialState = currencyStates[0];
+    const currencyCodeElement = document.getElementById('currency-code') as HTMLElement;
+    const payFrequencyElement = document.getElementById('pay-frequency') as HTMLElement;
+
+    // Verify initial state
+    expect(currencyCodeElement.textContent).toBe(initialState.currencyCode);
+    expect(payFrequencyElement.textContent).toBe(initialState.payFrequency);
+
+    // Cycle through all states
+    for (let i = 0; i < currencyStates.length; i++) {
+      shiftExample();
+    }
+
+    // Should be back at the initial state
+    expect(currencyCodeElement.textContent).toBe(initialState.currencyCode);
+    expect(payFrequencyElement.textContent).toBe(initialState.payFrequency);
   });
 });
 
@@ -416,6 +525,43 @@ describe('Data-Driven ShiftExample Implementation', () => {
     expect(exampleProduct.innerHTML).toContain('Kindle Paperwhite');
     expect(examplePrice.innerHTML).toContain('99,99');
     expect(examplePrice.innerHTML).toContain('EUR');
+  });
+
+  test('applyState handles invalid URLs correctly', () => {
+    // Create a spy on the log function
+    const logSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Get DOM elements
+    const currencyCode = document.getElementById('currency-code') as HTMLElement;
+    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+    const incomeAmount = document.getElementById('income-amount') as HTMLElement;
+    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
+    const exampleProduct = document.getElementById('example-product') as HTMLElement;
+    const examplePrice = document.getElementById('example-price') as HTMLElement;
+
+    // Create a copy of a state with an invalid URL
+    const invalidUrlState = {
+      ...currencyStates[0],
+      productUrl: 'javascript:alert("XSS attack")', // Invalid URL scheme
+    };
+
+    applyState(
+      invalidUrlState,
+      currencyCode,
+      currencySymbol,
+      incomeAmount,
+      payFrequency,
+      exampleProduct,
+      examplePrice,
+    );
+
+    // Verify that link href is set to # for invalid URL
+    const link = exampleProduct.querySelector('a');
+    expect(link).not.toBeNull();
+    expect(link?.getAttribute('href')).toBe('#');
+
+    // Clean up
+    logSpy.mockRestore();
   });
 
   test('full cycle transitions through all states in order', () => {

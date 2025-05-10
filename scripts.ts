@@ -325,7 +325,12 @@ export function applyState(
 
   // Create product element programmatically
   const productLink = document.createElement('a');
-  productLink.href = state.productUrl;
+  if (isValidHttpUrl(state.productUrl)) {
+    productLink.href = state.productUrl;
+  } else {
+    productLink.href = '#';
+    log('error', `Invalid URL skipped: ${state.productUrl}`, { component: 'applyState' });
+  }
   productLink.target = '_blank';
   productLink.textContent = state.productName;
   exampleProduct.appendChild(productLink);
