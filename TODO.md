@@ -172,7 +172,7 @@
     1. Log entries include all required context fields.
   - **Depends‑on:** none
 
-- [ ] **T011 · refactor · P1: add structured logging to all error paths**
+- [x] **T011 · refactor · P1: add structured logging to all error paths**
   - **Context:** cr-05 Implement Structured Logging for Errors
   - **Action:**
     1. Update error handling in functions to log before throwing:

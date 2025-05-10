@@ -1,3 +1,5 @@
+import { log } from './logger';
+
 /**
  * Starts the interval timer that cycles through example currency displays
  * Uses setInterval to call shiftExample at the defined interval
@@ -177,24 +179,33 @@ function getRequiredDOMElements(): DOMElements | null {
   const exampleProduct = document.getElementById('example-product');
   const examplePrice = document.getElementById('example-price');
 
-  if (
-    !currencyCode ||
-    !currencySymbol ||
-    !incomeAmount ||
-    !payFrequency ||
-    !exampleProduct ||
-    !examplePrice
-  ) {
+  // Check which elements are missing
+  const elementsToCheck = [
+    { element: currencyCode, id: 'currency-code' },
+    { element: currencySymbol, id: 'currency-symbol' },
+    { element: incomeAmount, id: 'income-amount' },
+    { element: payFrequency, id: 'pay-frequency' },
+    { element: exampleProduct, id: 'example-product' },
+    { element: examplePrice, id: 'example-price' },
+  ];
+
+  const missingElements = elementsToCheck.filter((item) => !item.element).map((item) => item.id);
+
+  if (missingElements.length > 0) {
+    log('warn', 'Some required DOM elements are missing', {
+      component: 'getRequiredDOMElements',
+      missingElements,
+    });
     return null;
   }
 
   return {
-    currencyCode,
-    currencySymbol,
-    incomeAmount,
-    payFrequency,
-    exampleProduct,
-    examplePrice,
+    currencyCode: currencyCode as HTMLElement,
+    currencySymbol: currencySymbol as HTMLElement,
+    incomeAmount: incomeAmount as HTMLElement,
+    payFrequency: payFrequency as HTMLElement,
+    exampleProduct: exampleProduct as HTMLElement,
+    examplePrice: examplePrice as HTMLElement,
   };
 }
 
@@ -212,6 +223,17 @@ export function shiftExample(): void {
   // Get DOM elements
   const elements = getRequiredDOMElements();
   if (!elements) {
+    log('error', 'Required DOM elements not found', {
+      component: 'shiftExample',
+      requiredElements: [
+        'currency-code',
+        'currency-symbol',
+        'income-amount',
+        'pay-frequency',
+        'example-product',
+        'example-price',
+      ],
+    });
     throw new Error(
       'Initialization failed: One or more required DOM elements not found. Check for elements: currency-code, currency-symbol, income-amount, pay-frequency, example-product, example-price',
     );
