@@ -56,7 +56,7 @@
     1. Pure logic functions have no DOM dependency.
   - **Depends‑on:** [T001]
 
-- [ ] **T005 · refactor · P1: refactor shiftExample to orchestrate pure logic and DOM update**
+- [x] **T005 · refactor · P1: refactor shiftExample to orchestrate pure logic and DOM update**
 
   - **Context:** cr-02 Decouple Core Logic from DOM
   - **Action:**

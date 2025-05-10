@@ -152,17 +152,30 @@ function getNextState(): CurrencyState {
 }
 
 /**
- * Updates the example display to show different currency and income scenarios.
- * Uses a data-driven approach to cycle through different examples of prices converted to work hours.
- * Uses internal state tracking rather than reading from the DOM to determine the current state.
+ * Interface representing all required DOM elements for currency display
+ * Used to group elements that are needed for updating the currency display
  */
-export function shiftExample(): void {
-  const currencyCode: HTMLElement | null = document.getElementById('currency-code');
-  const currencySymbol: HTMLElement | null = document.getElementById('currency-symbol');
-  const incomeAmount: HTMLElement | null = document.getElementById('income-amount');
-  const payFrequency: HTMLElement | null = document.getElementById('pay-frequency');
-  const exampleProduct: HTMLElement | null = document.getElementById('example-product');
-  const examplePrice: HTMLElement | null = document.getElementById('example-price');
+interface DOMElements {
+  currencyCode: HTMLElement;
+  currencySymbol: HTMLElement;
+  incomeAmount: HTMLElement;
+  payFrequency: HTMLElement;
+  exampleProduct: HTMLElement;
+  examplePrice: HTMLElement;
+}
+
+/**
+ * Retrieves all required DOM elements for the currency display
+ * Centralizes DOM element access in one function
+ * @returns Object containing all required elements, or null if any element is missing
+ */
+function getRequiredDOMElements(): DOMElements | null {
+  const currencyCode = document.getElementById('currency-code');
+  const currencySymbol = document.getElementById('currency-symbol');
+  const incomeAmount = document.getElementById('income-amount');
+  const payFrequency = document.getElementById('pay-frequency');
+  const exampleProduct = document.getElementById('example-product');
+  const examplePrice = document.getElementById('example-price');
 
   if (
     !currencyCode ||
@@ -172,6 +185,33 @@ export function shiftExample(): void {
     !exampleProduct ||
     !examplePrice
   ) {
+    return null;
+  }
+
+  return {
+    currencyCode,
+    currencySymbol,
+    incomeAmount,
+    payFrequency,
+    exampleProduct,
+    examplePrice,
+  };
+}
+
+/**
+ * Updates the example display to show different currency and income scenarios.
+ * Uses a data-driven approach to cycle through different examples of prices converted to work hours.
+ * Uses internal state tracking rather than reading from the DOM to determine the current state.
+ *
+ * This function orchestrates three separate concerns:
+ * 1. DOM element retrieval
+ * 2. Pure state calculation
+ * 3. DOM updates
+ */
+export function shiftExample(): void {
+  // Get DOM elements
+  const elements = getRequiredDOMElements();
+  if (!elements) {
     throw new Error(
       'Initialization failed: One or more required DOM elements not found. Check for elements: currency-code, currency-symbol, income-amount, pay-frequency, example-product, example-price',
     );
@@ -180,15 +220,15 @@ export function shiftExample(): void {
   // Compute next state (pure logic)
   const nextState = getNextState();
 
-  // Apply the next state to the DOM
+  // Apply state to DOM
   applyState(
     nextState,
-    currencyCode,
-    currencySymbol,
-    incomeAmount,
-    payFrequency,
-    exampleProduct,
-    examplePrice,
+    elements.currencyCode,
+    elements.currencySymbol,
+    elements.incomeAmount,
+    elements.payFrequency,
+    elements.exampleProduct,
+    elements.examplePrice,
   );
 }
 
