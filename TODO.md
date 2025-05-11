@@ -224,7 +224,7 @@
     1. Tests and usage updated, errors handled correctly.
   - **Depends‑on:** [T011]
 
-- [ ] **T013 · refactor · P1: update all applyState callers to use container-based API**
+- [x] **T013 · refactor · P1: update all applyState callers to use container-based API**
 
   - **Context:** cr-07 Simplify DOM API for applyState
   - **Action:**
@@ -233,7 +233,7 @@
     1. No callers use old multi-parameter form.
   - **Depends‑on:** [T012]
 
-- [ ] **T014 · test · P2: verify error handling when child elements are missing**
+- [x] **T014 · test · P2: verify error handling when child elements are missing**
   - **Context:** cr-07 Simplify DOM API for applyState
   - **Action:**
     1. Test that missing child elements in container triggers structured logging and throws.
