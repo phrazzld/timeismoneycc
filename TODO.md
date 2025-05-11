@@ -243,7 +243,7 @@
 
 ## scripts.ts – Dead Code Removal
 
-- [ ] **T015 · chore · P2: remove deprecated findCurrentStateIndex function**
+- [x] **T015 · chore · P2: remove deprecated findCurrentStateIndex function**
   - **Context:** cr-06 Remove Deprecated `findCurrentStateIndex`
   - **Action:**
     1. Delete the `findCurrentStateIndex` function from `scripts.ts`.

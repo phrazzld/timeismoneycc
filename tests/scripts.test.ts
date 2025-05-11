@@ -10,7 +10,6 @@ import {
   applyCopyrightText,
   startExampleInterval,
   initializeApplication,
-  findCurrentStateIndex,
   applyState,
   currencyStates,
   EXAMPLE_CYCLE_INTERVAL_MS,
@@ -472,26 +471,6 @@ describe('Data-Driven ShiftExample Implementation', () => {
     expect(currencyStates[2].currencyCode).toBe('GBP');
     expect(currencyStates[3].currencyCode).toBe('EUR');
     expect(currencyStates[4].currencyCode).toBe('MXN');
-  });
-
-  test('findCurrentStateIndex returns correct index for matching state', () => {
-    // Get DOM elements
-    const currencyCode = document.getElementById('currency-code') as HTMLElement;
-    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
-
-    // Test default index (0 for USD hourly)
-    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(0);
-
-    // Test with changed DOM
-    currencyCode.textContent = 'GBP';
-    currencySymbol.textContent = '£';
-    payFrequency.textContent = 'yearly';
-    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(2);
-
-    // Test non-matching state
-    currencyCode.textContent = 'JPY'; // Not in our states
-    expect(findCurrentStateIndex(currencyCode, currencySymbol, payFrequency)).toBe(-1);
   });
 
   test('applyState correctly updates DOM with state data (using container)', () => {

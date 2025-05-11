@@ -172,61 +172,11 @@ function getNextState(): CurrencyState {
   return currencyStates[nextIndex];
 }
 
-/**
- * Interface representing all required DOM elements for currency display
- * Used to group elements that are needed for updating the currency display
- */
-interface DOMElements {
-  currencyCode: HTMLElement;
-  currencySymbol: HTMLElement;
-  incomeAmount: HTMLElement;
-  payFrequency: HTMLElement;
-  exampleProduct: HTMLElement;
-  examplePrice: HTMLElement;
-}
+// DOMElements interface removed as part of T015
+// The interface was deprecated and is no longer needed now that we use the container-based API
 
-/**
- * Retrieves all required DOM elements for the currency display
- * Centralizes DOM element access in one function
- * @returns Object containing all required elements, or null if any element is missing
- */
-function getRequiredDOMElements(): DOMElements | null {
-  const currencyCode = document.getElementById('currency-code');
-  const currencySymbol = document.getElementById('currency-symbol');
-  const incomeAmount = document.getElementById('income-amount');
-  const payFrequency = document.getElementById('pay-frequency');
-  const exampleProduct = document.getElementById('example-product');
-  const examplePrice = document.getElementById('example-price');
-
-  // Check which elements are missing
-  const elementsToCheck = [
-    { element: currencyCode, id: 'currency-code' },
-    { element: currencySymbol, id: 'currency-symbol' },
-    { element: incomeAmount, id: 'income-amount' },
-    { element: payFrequency, id: 'pay-frequency' },
-    { element: exampleProduct, id: 'example-product' },
-    { element: examplePrice, id: 'example-price' },
-  ];
-
-  const missingElements = elementsToCheck.filter((item) => !item.element).map((item) => item.id);
-
-  if (missingElements.length > 0) {
-    log('warn', 'Some required DOM elements are missing', {
-      component: 'getRequiredDOMElements',
-      missingElements,
-    });
-    return null;
-  }
-
-  return {
-    currencyCode: currencyCode as HTMLElement,
-    currencySymbol: currencySymbol as HTMLElement,
-    incomeAmount: incomeAmount as HTMLElement,
-    payFrequency: payFrequency as HTMLElement,
-    exampleProduct: exampleProduct as HTMLElement,
-    examplePrice: examplePrice as HTMLElement,
-  };
-}
+// getRequiredDOMElements function removed as part of T015
+// The function was deprecated and is no longer needed now that we use the container-based API
 
 /**
  * Updates the example display to show different currency and income scenarios.
@@ -239,67 +189,20 @@ function getRequiredDOMElements(): DOMElements | null {
  * 3. DOM updates
  */
 export function shiftExample(): void {
-  // Get DOM elements
-  const elements = getRequiredDOMElements();
-  if (!elements) {
-    log('error', 'Required DOM elements not found', {
+  // Get DOM container
+  const container = document.body;
+  if (!container) {
+    log('error', 'Required DOM body not found', {
       component: 'shiftExample',
-      requiredElements: [
-        'currency-code',
-        'currency-symbol',
-        'income-amount',
-        'pay-frequency',
-        'example-product',
-        'example-price',
-      ],
     });
-    throw new Error(
-      'Initialization failed: One or more required DOM elements not found. Check for elements: currency-code, currency-symbol, income-amount, pay-frequency, example-product, example-price',
-    );
+    throw new Error('Initialization failed: document.body not found');
   }
 
   // Compute next state (pure logic)
   const nextState = getNextState();
 
-  // Apply state to DOM
-  applyState(
-    nextState,
-    elements.currencyCode,
-    elements.currencySymbol,
-    elements.incomeAmount,
-    elements.payFrequency,
-    elements.exampleProduct,
-    elements.examplePrice,
-  );
-}
-
-/**
- * @deprecated This function is deprecated and will be removed in the next major version.
- * Use the internal state tracking (currentDisplayStateIndex) instead of reading state from DOM.
- *
- * Finds the index of the current state based on DOM element values
- * @param currencyCode - Currency code element
- * @param currencySymbol - Currency symbol element
- * @param payFrequency - Pay frequency element
- * @returns Index of the current state in the currencyStates array, or -1 if no match
- */
-export function findCurrentStateIndex(
-  currencyCode: HTMLElement,
-  currencySymbol: HTMLElement,
-  payFrequency: HTMLElement,
-): number {
-  console.warn(
-    'findCurrentStateIndex is deprecated and will be removed in the next major version. ' +
-      'Use the internal state tracking instead of reading state from DOM.',
-  );
-
-  // Look for a matching state in the array
-  return currencyStates.findIndex(
-    (state) =>
-      isElementText(currencyCode, state.currencyCode) &&
-      isElementText(currencySymbol, state.currencySymbol) &&
-      isElementText(payFrequency, state.payFrequency),
-  );
+  // Apply state to DOM using container-based API
+  applyState(nextState, container);
 }
 
 /**
@@ -433,7 +336,10 @@ export function applyState(
 
 /**
  * Legacy version of applyState that accepts individual elements
- * @deprecated Use the container-based version instead
+ * @deprecated Use the container-based version instead.
+ * This function will be removed in the next major version once all callers are updated
+ * to use the container-based API (T013). All callers should be updated to use the
+ * container-based version, which provides better element management and validation.
  * @param state - The currency state to apply
  * @param currencyCode - The element to display the currency code
  * @param currencySymbol - The element to display the currency symbol
