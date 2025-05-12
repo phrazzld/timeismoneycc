@@ -265,7 +265,7 @@
 
 ## tests/scripts.test.ts – Pure Logic Testing
 
-- [ ] **T017 · test · P0: add dedicated tests for pure logic functions**
+- [x] **T017 · test · P0: add dedicated tests for pure logic functions**
   - **Context:** cr-10 Add More Pure Logic Tests
   - **Action:**
     1. Create test suite for pure functions (`calculateNextStateIndex`, `getNextState`, `isValidHttpUrl`).
