@@ -20,6 +20,7 @@ coverage/
 
 # Build files
 dist/
+browser-dist/
 build/
 *.zip
 **/.claude/settings.local.json

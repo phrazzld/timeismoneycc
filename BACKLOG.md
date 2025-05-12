@@ -282,12 +282,13 @@ This backlog outlines planned work for the "timeismoneycc" project. It balances 
 
 ### Critical
 
-- **[Size Optimization]**: **Remove Legacy `scripts.js` File After Full TypeScript Migration**
+- **[Size Optimization]**: ✓ **Remove Legacy `scripts.js` File After Full TypeScript Migration**
 
   - **Complexity**: Simple
   - **Rationale**: The `scripts.js` file is a legacy JavaScript version of `scripts.ts`. Once the TypeScript version is fully functional and adopted (as per "Configure Strict TypeScript Build & Remove All Legacy JavaScript"), this file becomes pure duplication, increasing codebase size and maintenance overhead.
   - **Expected Outcome**: Removal of `scripts.js` (approx. 50-100 LOC reduction). Reduces final bundle size by eliminating a redundant asset. Simplifies codebase and build configuration.
   - **Dependencies**: Configure Strict TypeScript Build & Remove All Legacy JavaScript
+  - **Status**: Completed. The legacy scripts.js file has been removed as part of the TypeScript migration. The project now uses TypeScript exclusively with proper compilation to the dist directory.
 
 - **[Size Optimization]**: **Replace Bootstrap 3 CSS with a Purged Utility-First CSS Framework (e.g., Tailwind CSS)**
   - **Complexity**: Complex

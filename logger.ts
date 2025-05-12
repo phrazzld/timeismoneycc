@@ -61,3 +61,15 @@ export function log(level: LogLevel, message: string, context?: LogContext): voi
   // Output as JSON to appropriate console method based on level
   console[level](JSON.stringify(logEntry));
 }
+
+// Expose logger to the global scope for browser use
+if (typeof window !== 'undefined') {
+  (window as any).loggerModule = {
+    log,
+  };
+}
+
+// Allow CommonJS exports for Node.js environment
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { log };
+}

@@ -16,12 +16,25 @@
   - **Depends‑on:** none
 
 - [x] **T002 · refactor · P1: update internal consumers to use internal state variable**
+
   - **Context:** cr-01 Remove Exported Mutable State
   - **Action:**
     1. Change all internal references to use the now-internal state variable or getter.
   - **Done‑when:**
     1. No code references a removed export.
   - **Depends‑on:** [T001]
+
+- [x] **T019 · chore · P1: remove legacy scripts.js file after TypeScript migration**
+  - **Context:** Size Optimization
+  - **Action:**
+    1. Identify and remove any legacy scripts.js file duplicating scripts.ts functionality
+    2. Update references to use compiled TypeScript output
+    3. Fix any interface issues causing build errors
+  - **Done‑when:**
+    1. No legacy scripts.js exists at root level
+    2. Application builds and runs correctly using TypeScript only
+    3. All tests pass successfully
+  - **Depends‑on:** none
 
 ## tests/scripts.test.ts – Test Isolation
 
@@ -278,7 +291,7 @@
 
 ## tests/scripts.test.ts – Behavioral Testing
 
-- [ ] **T018 · test · P1: refactor state transition tests to focus on observable behavior**
+- [x] **T018 · test · P1: refactor state transition tests to focus on observable behavior**
 
   - **Context:** cr-11 Refactor Implementation-Dependent Tests
   - **Action:**

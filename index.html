@@ -83,12 +83,16 @@
       </div>
     </footer>
 
-    <script src="dist/scripts.js"></script>
+    <script src="browser-scripts.js"></script>
     <script>
       // Initialize the application when the DOM is fully loaded
       document.addEventListener('DOMContentLoaded', function () {
-        // Assumes the global initializeApplication function is exported from scripts.js
-        window.initializeApplication();
+        // Use the global initializeApplication function
+        if (typeof window.initializeApplication === 'function') {
+          window.initializeApplication();
+        } else {
+          console.error('initializeApplication function not found. Check scripts.js exports.');
+        }
       });
     </script>
   </body>

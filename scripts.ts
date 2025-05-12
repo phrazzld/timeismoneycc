@@ -1,4 +1,10 @@
-import { log } from './logger';
+// Import logger in a way that works both for CommonJS/Node and browser
+// @ts-ignore - Handle both module systems
+const logger =
+  typeof require !== 'undefined'
+    ? require('./logger')
+    : window.loggerModule || { log: console.error };
+const { log } = logger;
 
 /**
  * Starts the interval timer that cycles through example currency displays
@@ -543,13 +549,6 @@ export function applyCopyrightText(): void {
 // Moved to initializeApplication() function
 
 /**
- * Interface to augment Window with our application functions
- */
-export interface AppWindow extends Window {
-  initializeApplication?: () => void;
-}
-
-/**
  * Initializes the application by starting the example interval and setting the copyright text
  * Call this function to start the application functionality
  */
@@ -558,7 +557,14 @@ export function initializeApplication(): void {
   applyCopyrightText();
 }
 
-// Expose initializeApplication to the global scope for use in index.html
+// Expose functions to the global scope for use in browser
+declare global {
+  interface Window {
+    initializeApplication: () => void;
+    loggerModule?: { log: (level: string, message: string, context?: any) => void };
+  }
+}
+
 if (typeof window !== 'undefined') {
-  (window as AppWindow).initializeApplication = initializeApplication;
+  window.initializeApplication = initializeApplication;
 }

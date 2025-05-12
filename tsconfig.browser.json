@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "es2015",
+    "outDir": "browser-dist",
+    "target": "es2015",
+    "lib": ["dom", "dom.iterable", "esnext"]
+  },
+  "include": ["scripts.ts", "logger.ts"]
+}
