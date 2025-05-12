@@ -3,9 +3,18 @@ import { log } from './logger';
 /**
  * Starts the interval timer that cycles through example currency displays
  * Uses setInterval to call shiftExample at the defined interval
+ * @internal Only used by initializeApplication
  */
-export function startExampleInterval(): void {
+function startExampleInterval(): void {
   setInterval(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);
+}
+
+/**
+ * Export of startExampleInterval for testing purposes
+ * @internal
+ */
+export function _startExampleIntervalForTesting(): void {
+  startExampleInterval();
 }
 
 // Start the example cycling interval
@@ -49,8 +58,15 @@ export interface CurrencyState {
 
 /**
  * Time interval in milliseconds for cycling through example states
+ * @internal Implementation detail
  */
-export const EXAMPLE_CYCLE_INTERVAL_MS = 4000;
+const EXAMPLE_CYCLE_INTERVAL_MS = 4000;
+
+/**
+ * Export of EXAMPLE_CYCLE_INTERVAL_MS for testing purposes
+ * @internal
+ */
+export const _EXAMPLE_CYCLE_INTERVAL_MS_FOR_TESTING = EXAMPLE_CYCLE_INTERVAL_MS;
 
 /**
  * Track the current display state index
@@ -90,8 +106,9 @@ export function _resetStateForTesting(): void {
  * 3. Add the object to this array
  *
  * The order of elements in this array determines the cycling sequence.
+ * @internal Implementation detail - the data is part of the application logic but not exposed API
  */
-export const currencyStates: CurrencyState[] = [
+const currencyStates: CurrencyState[] = [
   {
     // Default USD hourly wage worker
     currencyCode: 'USD',
@@ -151,14 +168,32 @@ export const currencyStates: CurrencyState[] = [
 ];
 
 /**
+ * Export of currencyStates for testing purposes
+ * @internal
+ */
+export const _currencyStatesForTesting: CurrencyState[] = [...currencyStates];
+
+/**
  * Calculate the next state index, cycling through available states
  * A pure function that takes the current index and total states as parameters
  * @param currentIndex - The current state index
  * @param totalStates - The total number of states in the cycle
  * @returns The index of the next state
+ * @internal Used by getNextState function
  */
-export function calculateNextStateIndex(currentIndex: number, totalStates: number): number {
+function calculateNextStateIndex(currentIndex: number, totalStates: number): number {
   return (currentIndex + 1) % totalStates;
+}
+
+/**
+ * Export of calculateNextStateIndex for testing purposes
+ * @internal
+ */
+export function _calculateNextStateIndexForTesting(
+  currentIndex: number,
+  totalStates: number,
+): number {
+  return calculateNextStateIndex(currentIndex, totalStates);
 }
 
 /**
@@ -447,20 +482,38 @@ export function isValidHttpUrl(url: string): boolean {
  * @param element - The HTML element to check
  * @param val - The expected text content
  * @returns True if the element exists and its text content matches the expected value
+ * @internal Utility function for DOM element text validation
  */
-export function isElementText(element: HTMLElement | null, val: string): boolean {
+function isElementText(element: HTMLElement | null, val: string): boolean {
   return element !== null && element.textContent === val;
+}
+
+/**
+ * Export of isElementText for testing purposes
+ * @internal
+ */
+export function _isElementTextForTesting(element: HTMLElement | null, val: string): boolean {
+  return isElementText(element, val);
 }
 
 /**
  * Generates a copyright text string for the given year
  * @param year - The year to include in the copyright text
  * @returns A formatted copyright string with the year and link to Phaedrus
+ * @internal Used by applyCopyrightText
  */
-export function getCopyrightText(year: number): string {
+function getCopyrightText(year: number): string {
   return (
     'Copyright \u00A9 ' + year + ' <a href="https://www.phaedrus.io" target="_blank">Phaedrus</a>'
   );
+}
+
+/**
+ * Export of getCopyrightText for testing purposes
+ * @internal
+ */
+export function _getCopyrightTextForTesting(year: number): string {
+  return getCopyrightText(year);
 }
 
 /**

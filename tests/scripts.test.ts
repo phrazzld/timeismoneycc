@@ -4,18 +4,18 @@
 
 // Import functions from scripts.ts for testing
 import {
-  isElementText,
   shiftExample,
-  getCopyrightText,
   applyCopyrightText,
-  startExampleInterval,
   initializeApplication,
   applyState,
-  currencyStates,
-  EXAMPLE_CYCLE_INTERVAL_MS,
-  calculateNextStateIndex,
   _resetStateForTesting,
   isValidHttpUrl,
+  _isElementTextForTesting as isElementText,
+  _getCopyrightTextForTesting as getCopyrightText,
+  _calculateNextStateIndexForTesting as calculateNextStateIndex,
+  _EXAMPLE_CYCLE_INTERVAL_MS_FOR_TESTING as EXAMPLE_CYCLE_INTERVAL_MS,
+  _currencyStatesForTesting as currencyStates,
+  _startExampleIntervalForTesting as startExampleInterval,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning

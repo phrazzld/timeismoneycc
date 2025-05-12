@@ -254,7 +254,7 @@
 
 ## scripts.ts – Public API Hygiene
 
-- [ ] **T016 · refactor · P2: remove unnecessary exports from scripts.ts**
+- [x] **T016 · refactor · P2: remove unnecessary exports from scripts.ts**
   - **Context:** cr-09 Remove Unnecessary Exports
   - **Action:**
     1. Review all exports and remove `export` from internal utilities and constants.
