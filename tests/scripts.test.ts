@@ -4,12 +4,18 @@
 
 // Import functions from scripts.ts for testing
 import {
-  isElementText,
   shiftExample,
-  getCopyrightText,
   applyCopyrightText,
-  startExampleInterval,
   initializeApplication,
+  applyState,
+  _resetStateForTesting,
+  isValidHttpUrl,
+  _isElementTextForTesting as isElementText,
+  _getCopyrightTextForTesting as getCopyrightText,
+  _calculateNextStateIndexForTesting as calculateNextStateIndex,
+  _EXAMPLE_CYCLE_INTERVAL_MS_FOR_TESTING as EXAMPLE_CYCLE_INTERVAL_MS,
+  _currencyStatesForTesting as currencyStates,
+  _startExampleIntervalForTesting as startExampleInterval,
 } from '../scripts';
 
 // Separating the functions to reduce max-lines-per-function warning
@@ -101,10 +107,92 @@ describe('Time Is Money DOM Elements', () => {
   });
 });
 
-// Separate describe block to avoid max-lines-per-function warning
-describe('Shift Example Transitions', () => {
+// Pure logic unit tests that don't require jsdom
+describe('URL and State Index Logic', () => {
   beforeEach(() => {
-    // Create a mock document object
+    _resetStateForTesting();
+  });
+
+  describe('isValidHttpUrl function', () => {
+    test('validates correct HTTP and HTTPS URLs', () => {
+      // Valid URLs
+      expect(isValidHttpUrl('https://example.com')).toBe(true);
+      expect(isValidHttpUrl('http://example.com')).toBe(true);
+      expect(isValidHttpUrl('https://sub.example.com/path?query=param#hash')).toBe(true);
+      expect(isValidHttpUrl('http://localhost:3000')).toBe(true);
+      expect(isValidHttpUrl('https://142.251.32.110')).toBe(true);
+    });
+
+    test('rejects invalid or non-HTTP URLs', () => {
+      // Invalid or malformed URLs
+      expect(isValidHttpUrl('')).toBe(false);
+      expect(isValidHttpUrl('not a url')).toBe(false);
+      expect(isValidHttpUrl('example.com')).toBe(false); // Missing protocol
+
+      // Non-HTTP protocols
+      expect(isValidHttpUrl('ftp://example.com')).toBe(false);
+      expect(isValidHttpUrl('file:///path/to/file')).toBe(false);
+      expect(isValidHttpUrl('javascript:alert("XSS")')).toBe(false); // Important XSS vector
+      expect(isValidHttpUrl('data:text/html,<script>alert("XSS")</script>')).toBe(false); // Another XSS vector
+    });
+  });
+
+  describe('calculateNextStateIndex function', () => {
+    test('returns correct next index', () => {
+      // Test from first state
+      expect(calculateNextStateIndex(0, currencyStates.length)).toBe(1);
+
+      // Test from middle state
+      expect(calculateNextStateIndex(2, currencyStates.length)).toBe(3);
+    });
+
+    test('wraps around at the end of the array', () => {
+      // Set to last state
+      const lastIndex = currencyStates.length - 1;
+      // Should wrap around to 0
+      expect(calculateNextStateIndex(lastIndex, currencyStates.length)).toBe(0);
+    });
+
+    test('handles edge cases', () => {
+      // Negative index (should still work, though not expected in real usage)
+      expect(calculateNextStateIndex(-1, currencyStates.length)).toBe(0);
+
+      // Zero total states (edge case)
+      expect(calculateNextStateIndex(0, 0)).toBeNaN(); // Division by zero results in NaN
+
+      // Very large index
+      expect(calculateNextStateIndex(1000, 5)).toBe(1); // 1000 + 1 = 1001, 1001 % 5 = 1
+    });
+  });
+});
+
+// Helper function for tests
+const getDisplayState = (): {
+  currencyCode: string;
+  currencySymbol: string;
+  incomeAmount: string;
+  payFrequency: string;
+  productHTML: string;
+  priceHTML: string;
+} => {
+  return {
+    currencyCode: document.getElementById('currency-code')?.textContent ?? '',
+    currencySymbol: document.getElementById('currency-symbol')?.textContent ?? '',
+    incomeAmount: document.getElementById('income-amount')?.textContent ?? '',
+    payFrequency: document.getElementById('pay-frequency')?.textContent ?? '',
+    productHTML: document.getElementById('example-product')?.innerHTML ?? '',
+    priceHTML: document.getElementById('example-price')?.innerHTML ?? '',
+  };
+};
+
+// Tests for currency state transition behavior
+describe('Currency State Transitions', () => {
+  // Common setup for all state transition tests
+  beforeEach(() => {
+    // Reset state before each test
+    _resetStateForTesting();
+
+    // Setup DOM with default structure
     document.body.innerHTML = `
       <div id="currency-code">USD</div>
       <div id="currency-symbol">$</div>
@@ -116,128 +204,300 @@ describe('Shift Example Transitions', () => {
     `;
   });
 
-  test('transitions from default config (USD hourly) to yearly salary', () => {
-    // Set up initial state (USD, $, hourly)
-    const currencyCode = document.getElementById('currency-code') as HTMLElement;
-    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-    const incomeAmount = document.getElementById('income-amount') as HTMLElement;
-    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
-    const examplePrice = document.getElementById('example-price') as HTMLElement;
+  describe('Cycle Tests', () => {
+    test('cycles through all currency states in sequence', () => {
+      // Get observable data for each expected state
+      const expectedStates = currencyStates.map((state) => ({
+        currencyCode: state.currencyCode,
+        currencySymbol: state.currencySymbol,
+        incomeAmount: state.incomeAmount,
+        payFrequency: state.payFrequency,
+      }));
 
-    expect(currencyCode.textContent).toBe('USD');
-    expect(currencySymbol.textContent).toBe('$');
-    expect(payFrequency.textContent).toBe('hourly');
+      // Verify initial state matches first expected state (USD hourly)
+      let displayState = getDisplayState();
+      expect(displayState.currencyCode).toBe(expectedStates[0].currencyCode);
+      expect(displayState.payFrequency).toBe(expectedStates[0].payFrequency);
 
-    // Call the function
-    shiftExample();
+      // Cycle through all states and verify each transition
+      for (let i = 0; i < expectedStates.length; i++) {
+        shiftExample();
+        displayState = getDisplayState();
 
-    // Verify the transition
-    expect(currencyCode.textContent).toBe('USD');
-    expect(currencySymbol.textContent).toBe('$');
-    expect(incomeAmount.textContent).toBe('50,756.00');
-    expect(payFrequency.textContent).toBe('yearly');
-    expect(examplePrice.innerHTML).toContain('$');
-    expect(examplePrice.innerHTML).toContain('445.00');
+        // Get the expected state (with wrapping)
+        const expectedIndex = (i + 1) % expectedStates.length;
+        const expected = expectedStates[expectedIndex];
+
+        // Verify transition occurred correctly based on observable DOM state
+        expect(displayState.currencyCode).toBe(expected.currencyCode);
+        expect(displayState.currencySymbol).toBe(expected.currencySymbol);
+        expect(displayState.incomeAmount).toBe(expected.incomeAmount);
+        expect(displayState.payFrequency).toBe(expected.payFrequency);
+      }
+    });
+
+    test('completes a full cycle and returns to the initial state', () => {
+      // Get the initial display state
+      const initialState = getDisplayState();
+
+      // Cycle through all states (5 total)
+      for (let i = 0; i < currencyStates.length; i++) {
+        shiftExample();
+      }
+
+      // Get the final state after completing the cycle
+      const finalState = getDisplayState();
+
+      // Verify we're back at the initial state
+      expect(finalState.currencyCode).toBe(initialState.currencyCode);
+      expect(finalState.currencySymbol).toBe(initialState.currencySymbol);
+      expect(finalState.incomeAmount).toBe(initialState.incomeAmount);
+      expect(finalState.payFrequency).toBe(initialState.payFrequency);
+    });
   });
 
-  test('transitions from USD yearly to GBP', () => {
-    // Set up initial state (USD, $, yearly)
-    const currencyCode = document.getElementById('currency-code') as HTMLElement;
-    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-    const incomeAmount = document.getElementById('income-amount') as HTMLElement;
-    const payFrequency = document.getElementById('pay-frequency') as HTMLElement;
-    const exampleProduct = document.getElementById('example-product') as HTMLElement;
-    const examplePrice = document.getElementById('example-price') as HTMLElement;
+  describe('Individual Transitions', () => {
+    test('transitions from USD hourly to USD yearly', () => {
+      // Get the initial display state
+      const initialState = getDisplayState();
+      expect(initialState.currencyCode).toBe('USD');
+      expect(initialState.payFrequency).toBe('hourly');
 
-    currencyCode.textContent = 'USD';
-    currencySymbol.textContent = '$';
-    incomeAmount.textContent = '50,756.00';
-    payFrequency.textContent = 'yearly';
+      // Trigger the state transition
+      shiftExample();
 
-    // Call the function
-    shiftExample();
+      // Get the new display state
+      const newState = getDisplayState();
 
-    // Verify the transition
-    expect(currencyCode.textContent).toBe('GBP');
-    expect(currencySymbol.textContent).toBe('£');
-    expect(incomeAmount.textContent).toBe('26,500.00');
-    expect(exampleProduct.innerHTML).toContain('Bulk crisps');
-    expect(examplePrice.innerHTML).toContain('£');
-    expect(examplePrice.innerHTML).toContain('24.99');
+      // Verify the transition occurred correctly
+      expect(newState.currencyCode).toBe('USD');
+      expect(newState.currencySymbol).toBe('$');
+      expect(newState.incomeAmount).toBe('50,756.00');
+      expect(newState.payFrequency).toBe('yearly');
+      expect(newState.priceHTML).toContain('$');
+      expect(newState.priceHTML).toContain('445.00');
+    });
+
+    test('transitions from USD yearly to GBP', () => {
+      // Start by transitioning to USD yearly
+      shiftExample();
+
+      // Verify we're in USD yearly state
+      let displayState = getDisplayState();
+      expect(displayState.currencyCode).toBe('USD');
+      expect(displayState.payFrequency).toBe('yearly');
+
+      // Trigger next transition
+      shiftExample();
+
+      // Get the new display state
+      displayState = getDisplayState();
+
+      // Verify transition to GBP
+      expect(displayState.currencyCode).toBe('GBP');
+      expect(displayState.currencySymbol).toBe('£');
+      expect(displayState.incomeAmount).toBe('26,500.00');
+      expect(displayState.payFrequency).toBe('yearly');
+      expect(displayState.productHTML).toContain('Bulk crisps');
+      expect(displayState.priceHTML).toContain('£');
+      expect(displayState.priceHTML).toContain('24.99');
+    });
+
+    test('transitions from GBP to EUR', () => {
+      // Get to GBP state first (requires two transitions)
+      shiftExample(); // USD hourly -> USD yearly
+      shiftExample(); // USD yearly -> GBP
+
+      // Verify we're in GBP state
+      let displayState = getDisplayState();
+      expect(displayState.currencyCode).toBe('GBP');
+
+      // Trigger transition to EUR
+      shiftExample();
+
+      // Get the new display state
+      displayState = getDisplayState();
+
+      // Verify transition to EUR
+      expect(displayState.currencyCode).toBe('EUR');
+      expect(displayState.currencySymbol).toBe('€');
+      expect(displayState.productHTML).toContain('Kindle Paperwhite');
+      expect(displayState.priceHTML).toContain('99,99');
+      expect(displayState.priceHTML).toContain('EUR');
+    });
+
+    test('transitions from EUR to MXN', () => {
+      // Get to EUR state first (requires three transitions)
+      shiftExample(); // USD hourly -> USD yearly
+      shiftExample(); // USD yearly -> GBP
+      shiftExample(); // GBP -> EUR
+
+      // Verify we're in EUR state
+      let displayState = getDisplayState();
+      expect(displayState.currencyCode).toBe('EUR');
+
+      // Trigger transition to MXN
+      shiftExample();
+
+      // Get the new display state
+      displayState = getDisplayState();
+
+      // Verify transition to MXN
+      expect(displayState.currencyCode).toBe('MXN');
+      expect(displayState.currencySymbol).toBe('$');
+      expect(displayState.productHTML).toContain('Licuadora Oster');
+      expect(displayState.priceHTML).toContain('1,149.00');
+    });
+
+    test('transitions from MXN back to USD hourly', () => {
+      // Get to MXN state first (requires four transitions)
+      shiftExample(); // USD hourly -> USD yearly
+      shiftExample(); // USD yearly -> GBP
+      shiftExample(); // GBP -> EUR
+      shiftExample(); // EUR -> MXN
+
+      // Verify we're in MXN state
+      let displayState = getDisplayState();
+      expect(displayState.currencyCode).toBe('MXN');
+
+      // Trigger transition back to USD hourly
+      shiftExample();
+
+      // Get the new display state
+      displayState = getDisplayState();
+
+      // Verify transition back to USD hourly (complete cycle)
+      expect(displayState.currencyCode).toBe('USD');
+      expect(displayState.currencySymbol).toBe('$');
+      expect(displayState.incomeAmount).toBe('7.25');
+      expect(displayState.payFrequency).toBe('hourly');
+    });
   });
 
-  test('transitions from GBP to EUR', () => {
-    // Set up initial state (GBP, £)
-    const currencyCode = document.getElementById('currency-code') as HTMLElement;
-    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
+  describe('Error Handling', () => {
+    test('throws error when DOM elements are missing', () => {
+      // Remove a required element
+      document.getElementById('currency-code')?.remove();
 
-    currencyCode.textContent = 'GBP';
-    currencySymbol.textContent = '£';
+      // Call the function and expect it to throw
+      expect(() => shiftExample()).toThrow();
 
-    // Call the function
-    shiftExample();
-
-    // Verify the transition
-    expect(currencyCode.textContent).toBe('EUR');
-    expect(currencySymbol.textContent).toBe('€');
-  });
-
-  test('transitions from EUR to MXN', () => {
-    // Set up initial state (EUR, €)
-    const currencyCode = document.getElementById('currency-code') as HTMLElement;
-    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-
-    currencyCode.textContent = 'EUR';
-    currencySymbol.textContent = '€';
-
-    // Call the function
-    shiftExample();
-
-    // Verify the transition
-    expect(currencyCode.textContent).toBe('MXN');
-    expect(currencySymbol.textContent).toBe('$');
-  });
-
-  test('transitions from MXN back to USD hourly', () => {
-    // Set up a state not matching any condition to trigger the else clause
-    const currencyCode = document.getElementById('currency-code') as HTMLElement;
-    const currencySymbol = document.getElementById('currency-symbol') as HTMLElement;
-
-    currencyCode.textContent = 'MXN';
-    currencySymbol.textContent = '$';
-
-    // Call the function
-    shiftExample();
-
-    // Verify the transition back to default
-    expect(currencyCode.textContent).toBe('USD');
-    expect(currencySymbol.textContent).toBe('$');
-    expect(document.getElementById('income-amount')?.textContent).toBe('7.25');
-    expect(document.getElementById('pay-frequency')?.textContent).toBe('hourly');
-  });
-
-  test('handles missing DOM elements gracefully', () => {
-    // Remove a required element
-    document.getElementById('currency-code')?.remove();
-
-    // Setup console.error spy
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    // Call the function
-    shiftExample();
-
-    // Verify error was logged and function exited early
-    expect(consoleErrorSpy).toHaveBeenCalledWith('One or more required elements not found');
-
-    // Ensure other elements weren't modified
-    expect(document.getElementById('pay-frequency')?.textContent).toBe('hourly');
-
-    // Restore console.error
-    consoleErrorSpy.mockRestore();
+      // Ensure other elements weren't modified
+      expect(document.getElementById('pay-frequency')?.textContent).toBe('hourly');
+    });
   });
 });
 
-// Add tests for interval functionality
+// Tests for applyState DOM updates
+describe('Apply State Functionality', () => {
+  beforeEach(() => {
+    _resetStateForTesting();
+
+    // Set up DOM with standard container structure
+    document.body.innerHTML = `
+      <div id="container">
+        <div id="currency-code">USD</div>
+        <div id="currency-symbol">$</div>
+        <div id="income-amount">7.25</div>
+        <div id="pay-frequency">hourly</div>
+        <div id="example-product"></div>
+        <div id="example-price"></div>
+      </div>
+    `;
+  });
+
+  test('applyState correctly updates DOM with state data', () => {
+    const container = document.getElementById('container') as HTMLElement;
+    const eurState = currencyStates[3]; // EUR example
+
+    // Apply the state to the container
+    applyState(eurState, container);
+
+    // Verify DOM elements were updated correctly
+    expect(container.querySelector('#currency-code')?.textContent).toBe('EUR');
+    expect(container.querySelector('#currency-symbol')?.textContent).toBe('€');
+    expect(container.querySelector('#income-amount')?.textContent).toBe('9,61');
+    expect(container.querySelector('#pay-frequency')?.textContent).toBe('hourly');
+    expect(container.querySelector('#example-product')?.innerHTML).toContain('Kindle Paperwhite');
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('99,99');
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('EUR');
+  });
+
+  test('applyState handles different currency formatting correctly', () => {
+    const container = document.getElementById('container') as HTMLElement;
+
+    // Test EUR formatting
+    const eurState = currencyStates[3]; // EUR example
+    applyState(eurState, container);
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('99,99');
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('EUR');
+    expect(container.querySelector('#example-price')?.innerHTML).not.toContain('€');
+
+    // Test GBP formatting
+    const gbpState = currencyStates[2]; // GBP example
+    applyState(gbpState, container);
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('£');
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('24.99');
+
+    // Test USD formatting
+    const usdState = currencyStates[0]; // USD example
+    applyState(usdState, container);
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('$');
+    expect(container.querySelector('#example-price')?.innerHTML).toContain('445.00');
+  });
+
+  test('applyState handles invalid URLs safely', () => {
+    // Create a spy on the log function
+    const logSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const container = document.getElementById('container') as HTMLElement;
+    const exampleProduct = container.querySelector('#example-product') as HTMLElement;
+
+    // Create a state with an invalid URL that should be caught by security checks
+    const invalidUrlState = {
+      ...currencyStates[0],
+      productUrl: 'javascript:alert("XSS attack")', // Invalid URL scheme
+    };
+
+    // Apply the state
+    applyState(invalidUrlState, container);
+
+    // Verify that link href is set to safe fallback
+    const link = exampleProduct.querySelector('a');
+    expect(link).not.toBeNull();
+    expect(link?.getAttribute('href')).toBe('#');
+
+    // Verify that the error was logged
+    expect(logSpy).toHaveBeenCalled();
+
+    // Clean up
+    logSpy.mockRestore();
+  });
+
+  test('applyState throws error when container is missing required elements', () => {
+    // Create a container with missing elements
+    document.body.innerHTML = `
+      <div id="incomplete-container">
+        <div id="currency-code">USD</div>
+        <!-- Missing currency-symbol -->
+        <div id="income-amount">7.25</div>
+        <div id="pay-frequency">hourly</div>
+        <div id="example-product"></div>
+        <!-- Missing example-price -->
+      </div>
+    `;
+
+    const container = document.getElementById('incomplete-container') as HTMLElement;
+    const gbpState = currencyStates[2];
+
+    // Expect applying state to throw an error
+    expect(() => applyState(gbpState, container)).toThrow(
+      'Container missing required child elements',
+    );
+  });
+});
+
+// Tests for interval functionality
 describe('Interval Timer', () => {
   beforeEach(() => {
     // Use fake timers
@@ -261,7 +521,7 @@ describe('Interval Timer', () => {
   });
 
   describe('startExampleInterval function', () => {
-    test('calls setInterval with shiftExample and 4000ms delay', () => {
+    test('calls setInterval with shiftExample and the defined interval delay', () => {
       // Create a spy on global.setInterval
       const setIntervalSpy = jest.spyOn(global, 'setInterval');
 
@@ -270,13 +530,13 @@ describe('Interval Timer', () => {
 
       // Verify setInterval was called with the correct arguments
       expect(setIntervalSpy).toHaveBeenCalledTimes(1);
-      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);
 
       // Clean up spy
       setIntervalSpy.mockRestore();
     });
 
-    test('timer uses the correct interval value of 4000ms', () => {
+    test('timer uses the correct interval value from EXAMPLE_CYCLE_INTERVAL_MS constant', () => {
       // Mock setInterval to capture and check the delay value
       jest.spyOn(global, 'setInterval');
 
@@ -284,10 +544,13 @@ describe('Interval Timer', () => {
       startExampleInterval();
 
       // Verify setInterval was called with the correct delay
-      expect(global.setInterval).toHaveBeenCalledWith(expect.any(Function), 4000);
+      expect(global.setInterval).toHaveBeenCalledWith(
+        expect.any(Function),
+        EXAMPLE_CYCLE_INTERVAL_MS,
+      );
 
-      // This test is specifically designed to fail if the interval value changes,
-      // which is used for verification in the task requirements
+      // Also verify the constant has the expected value
+      expect(EXAMPLE_CYCLE_INTERVAL_MS).toBe(4000);
     });
   });
 
@@ -312,7 +575,7 @@ describe('Interval Timer', () => {
       initializeApplication();
 
       // Verify setInterval was called with correct parameters (from startExampleInterval)
-      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, 4000);
+      expect(setIntervalSpy).toHaveBeenCalledWith(shiftExample, EXAMPLE_CYCLE_INTERVAL_MS);
 
       // Verify copyright was set (from applyCopyrightText)
       expect(copyright.innerHTML).toContain('Copyright © 2023');
